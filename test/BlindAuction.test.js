@@ -26,37 +26,43 @@ contract('BlindAuction', (accounts) => {
   //other accounts -> bidders from account[2] to account[9]
   describe('sample testing',async () => {
     it('start auction', async () => {
-      await contract.startAuction(10,1,2,accounts[1],1,3,{from:accounts[0]})
+      const tokenID = 2
+      await contract.startAuction(10,1,2,accounts[1],tokenID,1,3,{from:accounts[0]})
       const auctionObj = await contract.getAuctionObject(accounts[1],{from:accounts[0]})
       assert.equal(auctionObj.min_loan_amount, 10)
       assert.equal(auctionObj.max_interest_rate, 1)
       assert.equal(auctionObj.min_repayment_period, 2)
+      assert.equal(auctionObj.NFT_contract_address, accounts[1])
+      assert.equal(auctionObj.NFT_tokenID,tokenID)
     })
     it('make bid', async () => {
       try{
-        await contract.makeBid(11,1,3,false,accounts[1],{from:accounts[2],value:11})
-        const auctionObj = await contract.getAuctionObject(accounts[1],{from:accounts[0]})
+        const tokenID = 2
+        await contract.makeBid(11,1,3,false,accounts[1],tokenID,{from:accounts[2],value:11})
+        const auctionObj = await contract.getAuctionObject(accounts[1],tokenID,{from:accounts[0]})
         assert.equal(auctionObj.blindedBids[0].depositValue, 11);
       }catch(error){console.log(error)}
     })
     it('reveal bid', async () => {
       try{
-        await contract.revealBid([[11,1,3]],[false],accounts[1],{from:accounts[2]})
-        const auctionObj = await contract.getAuctionObject(accounts[1],{from:accounts[0]})
+        const tokenID = 2
+        await contract.revealBid([[11,1,3]],[false],accounts[1],tokenID,{from:accounts[2]})
+        const auctionObj = await contract.getAuctionObject(accounts[1],tokenID,{from:accounts[0]})
         //console.log(auctionObj.revealedBids.length)
         assert.equal(auctionObj.revealedBids[0].loan_amount, 11);
         assert.equal(auctionObj.revealedBids[0].interest_rate, 1);
         assert.equal(auctionObj.revealedBids[0].repayment_time, 3);
         assert.equal(auctionObj.revealedBids[0].bidder_address, accounts[2]);
-        const eligibleWithdrawal1 = await contract.showEligibleWithdrawal(accounts[1],{from:accounts[2]})
+        const eligibleWithdrawal1 = await contract.showEligibleWithdrawal(accounts[1],tokenID,{from:accounts[2]})
         assert.equal(eligibleWithdrawal1,11)
       }catch(error){console.log(error)}
     })
     it('select bid', async () => {
       try{
+        const tokenID = 2
         await contract.selectBid(accounts[2],0,accounts[1])
-        const auctionObj = await contract.getAuctionObject(accounts[1],{from:accounts[0]})
-        const withdrawalamount1 = await contract.showEligibleWithdrawal(accounts[1],{from:accounts[2]})
+        const auctionObj = await contract.getAuctionObject(accounts[1],tokenID,{from:accounts[0]})
+        const withdrawalamount1 = await contract.showEligibleWithdrawal(accounts[1],tokenID,{from:accounts[2]})
         assert.equal(withdrawalamount1, 0)
         assert.equal(auctionObj.selectedBid.bidID, 0) //more
         assert.equal(auctionObj.bidSelected, true)       //this doesn't work until revealedBid works
