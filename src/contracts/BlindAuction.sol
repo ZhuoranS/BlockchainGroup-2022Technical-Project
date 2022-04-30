@@ -16,7 +16,7 @@ contract BlindAuction {
         uint interest_rate;
         uint repayment_time;
         // ID identifying the bid
-        uint bidID;
+        //uint bidID;
         // address of bidder
         address bidder_address;
     }
@@ -64,8 +64,6 @@ contract BlindAuction {
         // whether all bids have been revealed
         bool allBidsRevealed;
 
-        // counter for bid IDs
-        uint bidIDcounter;
         }
 
     // mapping of NFT_contract_address to NFT_tokenID to auction_objects
@@ -106,6 +104,7 @@ contract BlindAuction {
         auctionObj.max_interest_rate = max_interest_rate;
         auctionObj.min_repayment_period = min_repayment_period;
         auctionObj.NFT_contract_address = NFT_contract_address;
+        auctionObj.NFT_tokenID = NFT_tokenID;
         auctionObj.auctionEndTime = auction_start_time + auction_duration;
         auctionObj.bidSelected = false;
         auctionObj.auctionCanceled  = false;
@@ -125,8 +124,8 @@ contract BlindAuction {
     
     function makeBid(uint loan_amt, uint int_rate, uint repayment_period, bool fake, address NFT_contract_address,uint32 NFT_tokenID) payable public{
         Auction_Object storage auctionObj = Auction_Objects[NFT_contract_address][NFT_tokenID];
-        require (!auctionObj.auctionEnded, "Auction has Ended");
-        require(!auctionObj.auctionCanceled, "Auction was canceled");
+        //require (!auctionObj.auctionEnded, "Auction has Ended");
+        //require(!auctionObj.auctionCanceled, "Auction was canceled");
         // ensure that bidder is not making the same bid
         bytes32 HashVal = generateHashedBid(loan_amt, int_rate, repayment_period, fake);
         BlindedBid[] storage bidsToCheck = allBlindedBids[NFT_contract_address][NFT_tokenID][msg.sender];
@@ -146,9 +145,9 @@ contract BlindAuction {
      function revealBid(uint[][] memory allSentLoanTerms, bool[] memory fake_, address NFT_contract_address,uint32 NFT_tokenID) public{
         Auction_Object storage auctionObj = Auction_Objects[NFT_contract_address][NFT_tokenID];
         BlindedBid[] storage bidsToCheck = allBlindedBids[NFT_contract_address][NFT_tokenID][msg.sender];
-        require(auctionObj.auctionEnded, "Auction has not ended");
-        require(allSentLoanTerms.length == bidsToCheck.length,"Different Lengths");
-        require(fake_.length == bidsToCheck.length,"Different Lengths");
+        //require(auctionObj.auctionEnded, "Auction has not ended");
+        //require(allSentLoanTerms.length == bidsToCheck.length,"Different Lengths");
+        //require(fake_.length == bidsToCheck.length,"Different Lengths");
         for(uint i = 0; i < bidsToCheck.length ;i++){
             (uint loan_amt,uint int_rate, uint rep_period) = (allSentLoanTerms[i][0],allSentLoanTerms[i][1],allSentLoanTerms[i][2]);
             bool fake = fake_[i];
@@ -163,9 +162,9 @@ contract BlindAuction {
                 int_rate <= auctionObj.max_interest_rate && 
                 rep_period >= auctionObj.min_repayment_period){
                     auctionObj.revealedBids.push(
-                        RevealedBid(loan_amt,int_rate,rep_period,auctionObj.bidIDcounter, msg.sender)
+                        RevealedBid(loan_amt,int_rate,rep_period,msg.sender)
                         );
-                    auctionObj.bidIDcounter += 1;
+                    //auctionObj.bidIDcounter += 1;
                 }
             }
             // Make it impossible for the sender to re-claim
@@ -181,8 +180,8 @@ contract BlindAuction {
 
     function selectBid(address selectedLender, uint256 bidID, address NFT_contract_address,uint32 NFT_tokenID) public{
         Auction_Object storage auctionObj = Auction_Objects[NFT_contract_address][NFT_tokenID];
-        require(!auctionObj.bidSelected, "A bid has already been selected");
-	    require(!auctionObj.auctionCanceled, "Auction was canceled");
+        //require(!auctionObj.bidSelected, "A bid has already been selected");
+	    //require(!auctionObj.auctionCanceled, "Auction was canceled");
         auctionObj.auctionEnded = true;
         
         require(auctionObj.revealedBids[bidID].bidder_address == selectedLender,"BidID doesn't correspond with selectedLender");
