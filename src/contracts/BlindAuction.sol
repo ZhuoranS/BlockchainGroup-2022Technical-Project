@@ -4,15 +4,6 @@ import "./NFTMarketplace.sol";
 import "./P2PLoan.sol";
 
 contract BlindAuction {
-    struct loanArgs {
-        address payable lender; // owner of capital
-        address payable borrower; // owner of NFT
-        uint NFTtokenID;
-        address NFTtokenAddress;
-        uint loanAmount;  // principal/capital of loan
-        uint interestRate;  // interest rate per month
-        uint loanDuration; // number of days
-    }
 
     struct BlindedBid{
         // blinded/hashed version of bid
@@ -210,16 +201,10 @@ contract BlindAuction {
         auctionObj.bidSelected = true;
         //invoking loan contract
         P2PLoan loan_contract = P2PLoan(Loan_contract_adderss);
-        // loanArgs  memory loan_args = P2PLoan.loanArgs({
-        //     lender: payable(auctionObj.selectedBid.bidder_address),
-        //     borrower: auctionObj.beneficiary,
-        //     NFTtokenID: NFT_tokenID,
-        //     NFTtokenAddress: NFT_contract_address,
-        //     loanAmount: auctionObj.min_loan_amount,
-        //     interestRate: auctionObj.selectedBid.interest_rate,
-        //     loanDuration: auctionObj.selectedBid.repayment_time
-        // });
-        // loan_contract.createLoan(loan_args);
+        loan_contract.createLoan( 
+            [auctionObj.selectedBid.bidder_address,auctionObj.beneficiary, NFT_contract_address],
+            [NFT_tokenID,auctionObj.min_loan_amount,auctionObj.selectedBid.interest_rate,auctionObj.selectedBid.repayment_time]
+        );
 
 
 

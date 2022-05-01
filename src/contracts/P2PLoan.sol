@@ -105,8 +105,8 @@ contract P2PLoan {
     creates a new loan object 
    */
   function createLoan(
-      address[] memory addresses, // lender, borrower, nft token address
-      uint[] memory uints // nft token id, loan amount, interest rate, loan duration
+      address[3] memory addresses, // lender, borrower, nft token address
+      uint[4] memory uints // nft token id, loan amount, interest rate, loan duration
     ) external returns(uint _numOfLoans) {
     address payable lender = payable(addresses[0]); 
     address payable borrower = payable(addresses[1]);
