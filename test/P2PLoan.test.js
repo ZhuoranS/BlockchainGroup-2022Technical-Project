@@ -117,10 +117,10 @@ contract('P2PLoan', (accounts) => {
       );
 
       await contract.repayLoan.sendTransaction(
-          1, 
+          1, // loan id
           { 
             from: accounts[9], 
-            value: web3.utils.toWei("2", "ether"),
+            value: web3Utils.toWei("0.001", "ether"),
             gas:3000000
           }
         );
@@ -151,47 +151,15 @@ contract('P2PLoan', (accounts) => {
         2,  // loan id
         { 
           from: accounts[0], 
-          value: web3.utils.toWei("10", "ether"), // sending in transaction with value of 1 eth
+          value: web3Utils.toWei("10", "ether"), // sending in transaction with value of 1 eth
           gas:3000000
         }
       );
     
     // const finalBalance = await contract.balanceOf(accounts[8])
     assert.equal(1 + 1 == 2, true, "borrower balance not changed")
-})
-
-    // it('should repay loan', async () => {
-    //   const args = new loanArgs(
-    //     accounts[0], // lender address
-    //     accounts[1], // borrower address
-    //     0, // token id
-    //     accounts[2], // token address
-    //     2, // loan amount
-    //     50,  // monthly interest rate 
-    //     30, // loan duration in days
-    //   );
-  
-    //   await contract.createLoan.sendTransaction(
-    //     args, { from: accounts[9], gas:300000000000} 
-    //   );
-    //   // const initialBalance = await contract.getBalance.call(accounts[1])
-
-    //   // await contract.repayLoan.sendTransaction(
-    //   //   0, 
-    //   //   { from: accounts[1], 
-    //   //     value: Web3.utils.toWei(1, "ether"), 
-    //   //     gas:3000000000000}
-    //   // );
-      
-    //   // const loan = await contract.getLoan.call(0);
-
-    //   // const finalBalance = await contract.getBalance.call(accounts[1])
-
-    //   // assert.equal(loan.status, 1, "status incorrect")
-    //   // assert.equal(finalBalance - initialBalance > 10.2, true, "balance incorrect")
-    // })
   })
-
+})
 
 
 /*

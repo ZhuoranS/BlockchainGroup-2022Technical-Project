@@ -42,6 +42,7 @@ contract P2PLoan {
     uint loanDuration; // number of days
   }
 
+
   // ============ Mutable Storage ============
 
   // total number of loans created
@@ -92,14 +93,6 @@ contract P2PLoan {
           );
           _;
       }
-  
-  modifier onlyManager() { // Modifier
-        require(
-            msg.sender == owner,
-            "Only leasing manager can call this."
-        );
-        _;
-    }
 
   constructor() public {
       owner = msg.sender;
@@ -178,7 +171,6 @@ contract P2PLoan {
   function repayLoan(uint _loanID) external payable {
     // emit consoleLog("msg value", msg.value);
     Loan storage loan = allLoans[_loanID];
-    // emit consoleLog("hi", msg.value);
     // Prevent repaying repaid loan
     require(loan.status == Status.ACTIVE, "Can't repay paid or defaulted loan.");
     // Prevent repaying loan after expiry
@@ -189,7 +181,7 @@ contract P2PLoan {
     require(msg.value >= loan.totalAmountDue, "Must pay in full.");
 
     // pay borrower
-    loan.lender.transfer(loan.totalAmountDue);    
+    loan.lender.transfer(msg.value); 
 
     NFTMarketplace nftMarketplace = NFTMarketplace(loan.NFTtokenAddress);
     nftMarketplace.unlockNFT(loan.NFTtokenAddress, loan.NFTtokenID, loan.borrower);
