@@ -8,4 +8,5 @@ module.exports = function(deployer) {
   deployer.deploy(P2PLoan);
   deployer.deploy(NFTManager);
   deployer.deploy(NFTMarketplace);
+  deployer.deploy(BlindAuction);
 };

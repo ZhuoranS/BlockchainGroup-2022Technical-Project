@@ -1,7 +1,19 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.4;
+import "./NFTMarketplace.sol";
+import "./P2PLoan.sol";
 
 contract BlindAuction {
+    struct loanArgs {
+        address payable lender; // owner of capital
+        address payable borrower; // owner of NFT
+        uint NFTtokenID;
+        address NFTtokenAddress;
+        uint loanAmount;  // principal/capital of loan
+        uint interestRate;  // interest rate per month
+        uint loanDuration; // number of days
+    }
+
     struct BlindedBid{
         // blinded/hashed version of bid
         bytes32 hashedBidVal;
@@ -98,6 +110,10 @@ contract BlindAuction {
         // each has a distinct NFT address
         // need to check that NFT is not already staked
         require(!NFT_staked_bool[NFT_contract_address][NFT_tokenID], "NFT is already staked");
+        //lock NFT
+        NFTMarketplace marketplace = NFTMarketplace(NFT_contract_address);
+        marketplace.lockNFT(NFT_contract_address, NFT_tokenID);
+        // start auction
         Auction_Object storage auctionObj = Auction_Objects[NFT_contract_address][NFT_tokenID];
         auctionObj.beneficiary = payable(msg.sender);
         auctionObj.min_loan_amount = min_loan_amount;
@@ -178,7 +194,7 @@ contract BlindAuction {
 
     }
 
-    function selectBid(address selectedLender, uint256 bidID, address NFT_contract_address,uint32 NFT_tokenID) public{
+    function selectBid(address selectedLender, uint256 bidID, address NFT_contract_address,uint32 NFT_tokenID, address Loan_contract_adderss) public{
         Auction_Object storage auctionObj = Auction_Objects[NFT_contract_address][NFT_tokenID];
         //require(!auctionObj.bidSelected, "A bid has already been selected");
 	    //require(!auctionObj.auctionCanceled, "Auction was canceled");
@@ -193,6 +209,19 @@ contract BlindAuction {
         auctionObj.selectedBid = bidSelected;
         auctionObj.bidSelected = true;
         //invoking loan contract
+        P2PLoan loan_contract = P2PLoan(Loan_contract_adderss);
+        // loanArgs  memory loan_args = P2PLoan.loanArgs({
+        //     lender: payable(auctionObj.selectedBid.bidder_address),
+        //     borrower: auctionObj.beneficiary,
+        //     NFTtokenID: NFT_tokenID,
+        //     NFTtokenAddress: NFT_contract_address,
+        //     loanAmount: auctionObj.min_loan_amount,
+        //     interestRate: auctionObj.selectedBid.interest_rate,
+        //     loanDuration: auctionObj.selectedBid.repayment_time
+        // });
+        // loan_contract.createLoan(loan_args);
+
+
 
     }
 
