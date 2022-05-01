@@ -51,6 +51,10 @@ contract('P2PLoan', (accounts) => {
   })
 
   describe('create loan', async () => {
+    it('should create a new loan betweene first and second ', async () => {
+      // change to your own acc on ganache
+      //assert.equal(accounts[0], 0x91dF6A7B8cF1507dbda938d135C0C7b956082689)
+      assert.equal(accounts[0], 0xa9B4d84329C337827Fa174d34B0972815b5fbB43)
     it('should increase numOfLoans', async () => {
         // creates a new loan
       const args = new loanArgs(
@@ -194,6 +198,7 @@ contract('P2PLoan', (accounts) => {
 
     it('should also behave like this', async () => {
       # more tests for the same function
+>>>>>>> 5db89281195aac5144c0970f168ccfca0cb17407
     })
   })
 */
