@@ -89,7 +89,7 @@ contract BlindAuction {
         return keccak256(abi.encodePacked(loan_amt, int_rate, repayment_period, fake));
     }
 
-    function startAuction(uint min_loan_amount, uint max_interest_rate, uint min_repayment_period, address NFT_contract_address, uint32 NFT_tokenID, uint auction_start_time,uint auction_duration) public{
+    function startAuction(uint min_loan_amount, uint max_interest_rate, uint min_repayment_period, address NFT_contract_address, uint32 NFT_tokenID, uint auction_duration) public{
         //NFT contract address + tokenID -> hashValue
         
         
@@ -105,7 +105,7 @@ contract BlindAuction {
         auctionObj.min_repayment_period = min_repayment_period;
         auctionObj.NFT_contract_address = NFT_contract_address;
         auctionObj.NFT_tokenID = NFT_tokenID;
-        auctionObj.auctionEndTime = auction_start_time + auction_duration;
+        auctionObj.auctionEndTime = block.timestamp + auction_duration * 1 hours;
         auctionObj.bidSelected = false;
         auctionObj.auctionCanceled  = false;
         auctionObj.allBidsRevealed = false;

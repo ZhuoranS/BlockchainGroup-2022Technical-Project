@@ -27,7 +27,7 @@ contract('BlindAuction', (accounts) => {
   describe('sample testing',async () => {
     it('start auction', async () => {
       const tokenID = 2
-      await contract.startAuction(10,1,2,accounts[1],tokenID,1,3,{from:accounts[0]})
+      await contract.startAuction(10,1,2,accounts[1],tokenID,3,{from:accounts[0]})
       const auctionObj = await contract.getAuctionObject(accounts[1],tokenID,{from:accounts[0]})
       assert.equal(auctionObj.min_loan_amount, 10)
       assert.equal(auctionObj.max_interest_rate, 1)
