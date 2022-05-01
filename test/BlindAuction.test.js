@@ -14,6 +14,7 @@ contract('BlindAuction', (accounts) => {
   })
 
   describe('deployment', async () => {
+<<<<<<< HEAD
     it('should match 1st, 2nd, 3rd accounts on ganache', async () => {
       // change to your own accounts on ganache
       //assert.equal(accounts[0], 0x922DCBAC38d92E2063A9AdDb0c3A7014b317f3B0)
@@ -67,6 +68,11 @@ contract('BlindAuction', (accounts) => {
         //assert.equal(auctionObj.selectedBid.bidID, 0) //more
         assert.equal(auctionObj.bidSelected, true)       //this doesn't work until revealedBid works
       }catch(error){console.log(error)}
+=======
+    it('should match first account on ganache', async () => {
+      // change to your own acc on ganache
+      assert.equal(accounts[0], 0xa9B4d84329C337827Fa174d34B0972815b5fbB43)
+>>>>>>> e42682f82209ace41b1842af904100387d1a0409
     })
   })
 })
