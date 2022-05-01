@@ -68,7 +68,14 @@ contract('P2PLoan', (accounts) => {
       );
 
       await contract.createLoan.sendTransaction(
-        args, { from: accounts[0], gas:3000000} // sent from the lender
+        accounts[0], // lender address
+        accounts[1], // borrower address
+        0, // token id
+        accounts[2], // token address
+        100, // loan amount
+        2,  // monthly interest rate 
+        30, // loan duration in days, 
+        { from: accounts[0], gas:3000000} // sent from the lender
       );
 
       const n = await contract.numOfLoans.call();
@@ -117,7 +124,14 @@ contract('P2PLoan', (accounts) => {
         30, // loan duration in days
       );
       await contract.createLoan.sendTransaction(
-        args, { from: accounts[0], gas:3000000} // sent from the lender
+        accounts[0], // lender address
+        accounts[1], // borrower address
+        0, // token id
+        accounts[2], // token address
+        100, // loan amount
+        2,  // monthly interest rate 
+        30, // loan duration in days, 
+        { from: accounts[0], gas:3000000} // sent from the lender
       );
 
       await contract.repayLoan.sendTransaction(
@@ -146,7 +160,14 @@ contract('P2PLoan', (accounts) => {
     );
 
     await contract.createLoan.sendTransaction(
-      args, { from: accounts[0], gas:3000000} // sent from the lender
+      accounts[0], // lender address
+      accounts[1], // borrower address
+      0, // token id
+      accounts[2], // token address
+      100, // loan amount
+      2,  // monthly interest rate 
+      30, // loan duration in days, 
+      { from: accounts[0], gas:3000000} // sent from the lender
     );
 
     // const initBalance = await await contract.balanceOf(accounts[8])

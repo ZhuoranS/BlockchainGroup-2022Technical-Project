@@ -105,15 +105,18 @@ contract P2PLoan {
     creates a new loan object 
    */
   function createLoan(
-    address payable lender, // owner of capital
-    address payable borrower, // owner of NFT
-    uint NFTtokenID,
-    address NFTtokenAddress,
-    uint loanAmount,  // principal/capital of loan
-    uint interestRate,  // interest rate per month
-    uint loanDuration // number of days
+      address[] memory addresses, // lender, borrower, nft token address
+      uint[] memory uints // nft token id, loan amount, interest rate, loan duration
     ) external returns(uint _numOfLoans) {
- 
+    address payable lender = payable(addresses[0]); 
+    address payable borrower = payable(addresses[1]);
+    address NFTtokenAddress = address(addresses[2]);
+
+    uint NFTtokenID = uints[0];
+    uint loanAmount = uints[1];
+    uint interestRate = uints[2];
+    uint loanDuration = uints[3]; 
+
     require(interestRate <= 100, "Interest must be lower than 100%.");
     require(loanDuration > 0, "Can't create loan in past");
     require(loanDuration <= 360, "Max loan period is 12 months/360 days");
