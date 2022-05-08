@@ -8,6 +8,7 @@ import Profile from "./pages/Profile";
 import Explore from "./pages/Explore";
 import DetailedPost from "./pages/DetailedPost";
 import EditProfile from "./pages/EditProfile";
+import ExpandedPost from "./components/ExpandedPost";
 
 const Routing = () => {
   return (
@@ -15,8 +16,10 @@ const Routing = () => {
       <Nav />
       <Container>
         <Switch>
+          <Route exact path="/" component={Explore} />
           <Route path="/explore" component={Explore} />
           <Route path="/p/:postAddress" component={DetailedPost} />
+          <Route path="/e/:postAddress" component={ExpandedPost} />
           <Route path="/accounts/edit" component={EditProfile} />
           <Route path="/:address" component={Profile} />
         </Switch>

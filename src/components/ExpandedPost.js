@@ -1,9 +1,11 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import styled from "styled-components";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import {toast} from "react-toastify";
+import Loader from "../components/Loader";
 import Button from "../styles/Button";
 import {UserContext} from "../context/UserContext"
+import { client } from "../utils";
 
 export const PostWrapper = styled.div`
   width: 900px;
@@ -80,9 +82,29 @@ export const PostWrapper = styled.div`
   }
 `;
 
-const ExpandedPost = ({ post }) => {
+const ExpandedPost = () => {
     const history = useHistory();
+    const { postAddress } = useParams();
+    const [loading, setLoading] = useState(true);
+    const [deadend, setDeadend] = useState(false);
     const {user} = useContext(UserContext);
+    const [post, setPost] = useState()
+    const [bids, setBids] = useState([]);
+
+    useEffect(() => {
+      client(`/posts/${postAddress}`)
+        .then((res) => {
+          setPost(res.data);
+          setBids(res.data.bidHistory);
+          setLoading(false);
+          setDeadend(false);
+        })
+        .catch((err) => setDeadend(true));
+    }, [postAddress]);
+
+    if (!deadend && loading) {
+      return <Loader />;
+    }
 
     return (
         <PostWrapper>
@@ -153,16 +175,34 @@ const ExpandedPost = ({ post }) => {
                     <ul>
                         <li>
                             { post?.status === "on loan" && post?.borrower === user.address ?
-                                (<Button
+                                (
+                                <div>
+                                  <Button
                                     secondary
                                     onClick={() => toast.success("function not added")}
-                                >
-                                    repay
-                                </Button>
+                                  >
+                                      Repay
+                                  </Button>
+                                </div>
                                 ) : (
                                     <div> </div>
                                 )
                             }
+                            { post?.status === "on loan" ?
+                                (
+                                <div>
+                                  <Button 
+                                      secondary 
+                                      onClick={() => history.push(`/p/${post.address}`)}
+                                  >
+                                    View Completed Auction
+                                  </Button>
+                                </div>
+                                ) : (
+                                    <div> </div>
+                                )
+                            }      
+                            <Button onClick={() => history.goBack()}>&#x2190; Go Back</Button>                           
                         </li>
                     </ul>
                 </li>

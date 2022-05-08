@@ -24,7 +24,7 @@ contract NFTManager is ERC721URIStorage {
 
     token[] private NFTList;
 
-    //mapping(address => uint256[]) private balance;
+    //mapping(address => token) private balance;
 
     function createToken(string memory tokenURI, string memory _Name) public returns (uint256) {
         uint256 oldItemId = _tokenIds.current();
@@ -59,7 +59,7 @@ contract NFTManager is ERC721URIStorage {
             //balance[to].push(tokenId);
             return true;
         } else {
-            revert("Transfer Not Successful");
+            revert("Transfer Not Successful - You are not the owner!");
         }
     }
 

@@ -84,39 +84,31 @@ const Profile = () => {
           style={{ fontWeight: tab === "BIDS" ? "500" : "" }}
           onClick={() => setTab("BIDS")}
         >
-          <SavedIcon />
+          <SavedIcon  icon="BIDS" tabId={tab}/>
           <span>Bids</span>
         </div>
         <div
           style={{ fontWeight: tab === "BORROW" ? "500" : "" }}
           onClick={() => setTab("BORROW")}
         >
-          <SavedIcon />
+          <SavedIcon  icon="BORROW" tabId={tab}/>
           <span>Borrow</span>
         </div>
         <div
             style={{ fontWeight: tab === "LEND" ? "500" : "" }}
             onClick={() => setTab("LEND")}
         >
-          <SavedIcon />
+          <SavedIcon   icon="LEND" tabId={tab}/>
           <span>Lend</span>
         </div>
         <div
             style={{ fontWeight: tab === "HISTORY" ? "500" : "" }}
             onClick={() => setTab("HISTORY")}
         >
-          <SavedIcon />
+          <SavedIcon    icon="HISTORY" tabId={tab}/>
           <span>History</span>
         </div>
-        {profile?.isMe &&
-          <div
-              style={{ fontWeight: tab === "CREATE" ? "500" : "" }}
-              onClick={() => setTab("CREATE")}
-          >
-            <SavedIcon />
-            <span>Create</span>
-          </div>
-        }
+        
       </div>
 
       {tab === "BIDS" && (
@@ -145,9 +137,8 @@ const Profile = () => {
           ) : (
             <div>
               {/* TODO: make sure to return only posts user has borrowed */}
-              {profile?.borrowPosts?.map((post) => (
-                  <ExpandedPost key={post._id} post={post} />
-              ))}
+              <PostPreview posts={profile?.borrowPosts} />
+
             </div>
           )}
         </>
@@ -164,9 +155,8 @@ const Profile = () => {
             ) : (
                 <div>
                   {/* TODO: make sure to return only posts user has lent */}
-                  {profile?.loanPosts?.map((post) => (
-                      <ExpandedPost key={post._id} post={post} />
-                  ))}
+                  <PostPreview posts={profile?.loanPosts} active={false}/>
+
                 </div>
             )}
           </>
@@ -184,18 +174,13 @@ const Profile = () => {
                 <div>
                   {/* TODO: make sure to return only posts user has already completed */}
                   {profile?.history?.map((post) => (
-                      <ExpandedPost key={post._id} post={post} />
+                      <ExpandedPost key={post._id} prop_post={post} />
                   ))}
                 </div>
             )}
           </>
       )}
 
-      {tab === "CREATE" && (
-          <>
-            <CreatePost key={1} post={post1} />
-          </>
-      )}
     </Wrapper>
   );
 };

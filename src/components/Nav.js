@@ -1,4 +1,4 @@
-import React, {useContext} from "react";
+import React, {useContext, useState} from "react";
 import {Link} from "react-router-dom";
 import styled from "styled-components";
 import Search from "./Search";
@@ -7,9 +7,12 @@ import {HomeIcon, CloseIcon, SearchIcon, ExploreIcon, HeartIcon} from "./Icons";
 import {toast} from "react-toastify";
 import Button from "../styles/Button";
 import {client} from "../utils";
+import CreatePost from "./CreatePost";
+import {post1} from "../utils/FakeBackend";
 
 import {user1} from "../utils/FakeBackend";
 import Web3 from "web3";
+import Explore from "../pages/Explore";
 
 const NavWrapper = styled.div`
   position: fixed;
@@ -55,7 +58,8 @@ const NavWrapper = styled.div`
 `;
 
 const Nav = () => {
-    const {user, setUser} = useContext(UserContext);
+    const { user, setUser } = useContext(UserContext);
+    const [ modalOpen, setModalOpen ] = useState(false)
     const { ethereum } = window
 
     const handleDisconnect = () => {
@@ -84,10 +88,16 @@ const Nav = () => {
     return (
         <NavWrapper>
             <nav>
-                <Search/>
+                {user ? (
+                    <Button onClick={() => setModalOpen(true)}>
+                        Create Auction
+                    </Button>
+                ) : (
+                    <div></div>
+                )}
                 <ul>
                     <li>
-                        <Link to="/explore">
+                        <Link to="/">
                             <ExploreIcon/>
                         </Link>
                     </li>
@@ -112,7 +122,7 @@ const Nav = () => {
                     )}
                     {user ? (
                         <li>
-                            <Link to="/explore">
+                            <Link to="/">
                                 <Button secondary onClick={() => handleDisconnect()}>
                                     disconnect
                                 </Button>
@@ -127,6 +137,7 @@ const Nav = () => {
                     )}
                 </ul>
             </nav>
+            <CreatePost key={1} post={post1} open={modalOpen} onClose={() => setModalOpen(false)}/>
         </NavWrapper>
     );
 };

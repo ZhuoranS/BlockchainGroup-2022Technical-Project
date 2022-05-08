@@ -4,7 +4,7 @@ import styled from "styled-components";
 import useInput from "../hooks/useInput";
 
 const InputWrapper = styled.input`
-  padding: 0.4rem 0.6rem;
+  padding: 0.75rem;
   background: ${(props) => props.theme.bg};
   border: 1px solid ${(props) => props.theme.borderColor};
   font-family: "Fira Sans", sans-serif;
