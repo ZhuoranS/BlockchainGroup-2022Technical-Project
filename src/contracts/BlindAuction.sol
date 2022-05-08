@@ -2,7 +2,6 @@
 pragma solidity ^0.8.4;
 import "./NFTMarketplace.sol";
 import "./P2PLoan.sol";
-import "./SharedStructs.sol";
 
 contract BlindAuction {
 
@@ -201,17 +200,20 @@ contract BlindAuction {
         auctionObj.selectedBid = bidSelected;
         auctionObj.bidSelected = true;
         //invoking loan contract
-        SharedStructs.loanArgs memory loanArgs = SharedStructs.loanArgs(
-            payable(auctionObj.selectedBid.bidder_address),
-            auctionObj.beneficiary,
-            NFT_tokenID,
-            NFT_contract_address,
-            auctionObj.min_loan_amount,
-            auctionObj.selectedBid.interest_rate,
-            auctionObj.selectedBid.repayment_time
-        );
+        // SharedStructs.loanArgs memory loanArgs = SharedStructs.loanArgs(
+        //     payable(auctionObj.selectedBid.bidder_address),
+        //     auctionObj.beneficiary,
+        //     NFT_tokenID,
+        //     NFT_contract_address,
+        //     auctionObj.min_loan_amount,
+        //     auctionObj.selectedBid.interest_rate,
+        //     auctionObj.selectedBid.repayment_time
+        // );
         P2PLoan loan_contract = P2PLoan(Loan_contract_adderss);
-        loan_contract.createLoan( loanArgs );
+        loan_contract.createLoan( 
+            [auctionObj.selectedBid.bidder_address,auctionObj.beneficiary, NFT_contract_address],
+            [NFT_tokenID,auctionObj.min_loan_amount,auctionObj.selectedBid.interest_rate,auctionObj.selectedBid.repayment_time]
+        );
     }
 
     function endAuction(address NFT_contract_address,uint32 NFT_tokenID) public {
