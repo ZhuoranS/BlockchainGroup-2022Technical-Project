@@ -6,6 +6,7 @@ pragma solidity ^0.8.3;
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "abdk-libraries-solidity/ABDKMath64x64.sol";
 import "./NFTMarketplace.sol";
+import "./SharedStructs.sol";
 
 contract P2PLoan {
   
@@ -32,15 +33,15 @@ contract P2PLoan {
     Status status;
   }
 
-  struct loanArgs {
-    address payable lender; // owner of capital
-    address payable borrower; // owner of NFT
-    uint NFTtokenID;
-    address NFTtokenAddress;
-    uint loanAmount;  // principal/capital of loan
-    uint interestRate;  // interest rate per month
-    uint loanDuration; // number of days
-  }
+  // struct loanArgs {
+  //   address payable lender; // owner of capital
+  //   address payable borrower; // owner of NFT
+  //   uint NFTtokenID;
+  //   address NFTtokenAddress;
+  //   uint loanAmount;  // principal/capital of loan
+  //   uint interestRate;  // interest rate per month
+  //   uint loanDuration; // number of days
+  // }
 
   // ============ Mutable Storage ============
 
@@ -104,18 +105,16 @@ contract P2PLoan {
   /**
     creates a new loan object 
    */
-  function createLoan(
-      address[3] memory addresses, // lender, borrower, nft token address
-      uint[4] memory uints // nft token id, loan amount, interest rate, loan duration
-    ) external returns(uint _numOfLoans) {
-    address payable lender = payable(addresses[0]); 
-    address payable borrower = payable(addresses[1]);
-    address NFTtokenAddress = address(addresses[2]);
+  function createLoan( SharedStructs.loanArgs memory loanArgs) 
+      external returns(uint _numOfLoans) {
+    address payable lender = loanArgs.lender; 
+    address payable borrower = loanArgs.borrower;
+    address NFTtokenAddress = loanArgs.NFTtokenAddress;
 
-    uint NFTtokenID = uints[0];
-    uint loanAmount = uints[1];
-    uint interestRate = uints[2];
-    uint loanDuration = uints[3]; 
+    uint NFTtokenID = loanArgs.NFTtokenID;
+    uint loanAmount = loanArgs.loanAmount;
+    uint interestRate = loanArgs.interestRate;
+    uint loanDuration = loanArgs.loanDuration;
 
     require(interestRate <= 100, "Interest must be lower than 100%.");
     require(loanDuration > 0, "Can't create loan in past");

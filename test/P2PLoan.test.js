@@ -68,13 +68,17 @@ contract('P2PLoan', (accounts) => {
       );
 
       await contract.createLoan.sendTransaction(
-        accounts[0], // lender address
-        accounts[1], // borrower address
-        0, // token id
-        accounts[2], // token address
-        100, // loan amount
-        2,  // monthly interest rate 
-        30, // loan duration in days, 
+        [
+          accounts[0], // lender address
+          accounts[1], // borrower address
+          accounts[2], // token address
+        ],
+        [
+          0, // token id
+          100, // loan amount
+          2,  // monthly interest rate 
+          30, // loan duration in days, 
+        ],
         { from: accounts[0], gas:3000000} // sent from the lender
       );
 
@@ -113,24 +117,19 @@ contract('P2PLoan', (accounts) => {
   
   describe('repay loan', async () => {
     it('loan status changed', async () => {
-      // creates a new loan
-      const args = new loanArgs(
-        accounts[2], // lender address
-        accounts[9], // borrower address
-        0, // token id
-        accounts[4], // token address
-        1, // loan amount
-        100,  // monthly interest rate 
-        30, // loan duration in days
-      );
+
       await contract.createLoan.sendTransaction(
-        accounts[0], // lender address
-        accounts[1], // borrower address
-        0, // token id
-        accounts[2], // token address
-        100, // loan amount
-        2,  // monthly interest rate 
-        30, // loan duration in days, 
+        [
+          accounts[2], // lender address
+          accounts[9], // borrower address
+          accounts[4], // token address
+        ],
+        [
+          0, // token id
+          1, // loan amount
+          100,  // monthly interest rate 
+          30, // loan duration in days, 
+        ],
         { from: accounts[0], gas:3000000} // sent from the lender
       );
 
@@ -160,13 +159,17 @@ contract('P2PLoan', (accounts) => {
     );
 
     await contract.createLoan.sendTransaction(
-      accounts[0], // lender address
-      accounts[1], // borrower address
-      0, // token id
-      accounts[2], // token address
-      100, // loan amount
-      2,  // monthly interest rate 
-      30, // loan duration in days, 
+      [
+        accounts[2], // lender address
+        accounts[0], // borrower address
+        accounts[4], // token address
+      ],
+      [
+        0, // token id
+        5, // loan amount
+        50,  // monthly interest rate 
+        30, // loan duration in days, 
+      ],
       { from: accounts[0], gas:3000000} // sent from the lender
     );
 
