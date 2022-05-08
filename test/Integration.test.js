@@ -6,7 +6,7 @@ const P2PLoan = artifacts.require('P2PLoan')
 const BlindAuction = artifacts.require('BlindAuction')
 
 // Truffle Console test
-// NFTManager.deployed().then(function(instance){app=instance})
+// 
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -23,7 +23,7 @@ contract('Integration', (accounts) => {
     before(async () => {
       market_contract = await NFTMarketplace.deployed()
       nft_contract = await NFTManager.deployed()
-      loan_contract = await P2PLoan.deployed()
+      //loan_contract = await P2PLoan.deployed()
       auction_contract = await BlindAuction.deployed()
     })
     it('User A creates a NFT', async () => {
@@ -31,7 +31,7 @@ contract('Integration', (accounts) => {
       const token_URI_1 = "https://ipfs.io/ipfs/Qmd9MCGtdVz2miNumBHDbvj8bigSgTwnr4SbyH6DNnpWdt?filename=1-PUG.json"
       // somehow token_id_1 returned is not an int.
       await nft_contract.createToken(token_URI_1,'NFT 1',{from:accounts[0]})
-      //console.log(token_id_1)
+      console.log(token_id_1)
       const token_id_1 = await nft_contract.getLatestId()
       assert.equal(token_id_1, 1)
       const requested_uri = await nft_contract.tokenURI(token_id_1)
@@ -40,7 +40,16 @@ contract('Integration', (accounts) => {
       assert.equal(owner_1,accounts[0])
     })
     it('User A start an auction: lock NFT', async () =>{
+      const tokenURI = "testToken"
+      await nft_contract.createToken(tokenURI,'NFT_Lock_Test',{from:accounts[0]})
+      const tokenID = await nft_contract.getLatestId()
+      
+      await contract.startAuction(10,1,2,nft_contract.address,tokenID,3,{from:accounts[0]})
+      const locked = await auction_contract.isLocked(tokenID)
+      assert.equal(locked,true)
 
+      const owner = await nft_contract.ownerOf(tokenID)
+      assert.equal(owner, market_contract.address)
     })
     it('Auction ends, start Loan', async () =>{
 
