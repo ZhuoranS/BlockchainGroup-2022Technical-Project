@@ -107,51 +107,43 @@ contract P2PLoan {
    */
   function createLoan( SharedStructs.loanArgs memory loanArgs) 
       external returns(uint _numOfLoans) {
-    address payable lender = loanArgs.lender; 
-    address payable borrower = loanArgs.borrower;
-    address NFTtokenAddress = loanArgs.NFTtokenAddress;
 
-    uint NFTtokenID = loanArgs.NFTtokenID;
-    uint loanAmount = loanArgs.loanAmount;
-    uint interestRate = loanArgs.interestRate;
-    uint loanDuration = loanArgs.loanDuration;
+    require(loanArgs.interestRate <= 100, "Interest must be lower than 100%.");
+    require(loanArgs.loanDuration > 0, "Can't create loan in past");
+    require(loanArgs.loanDuration <= 360, "Max loan period is 12 months/360 days");
+    require(loanArgs.loanDuration % 30 == 0, "loan period must be in 30 day intervals");
 
-    require(interestRate <= 100, "Interest must be lower than 100%.");
-    require(loanDuration > 0, "Can't create loan in past");
-    require(loanDuration <= 360, "Max loan period is 12 months/360 days");
-    require(loanDuration % 30 == 0, "loan period must be in 30 day intervals");
-
-    uint durationInUnix = SafeMath.mul(loanDuration, 86400);
+    uint durationInUnix = SafeMath.mul(loanArgs.loanDuration, 86400);
     uint _loanCompleteTimeStamp = SafeMath.add(durationInUnix, block.timestamp);
     require(_loanCompleteTimeStamp > block.timestamp, "can't create loan in the past");
 
     // calculate total payment due
-    uint numOfMonths = SafeMath.div(loanDuration, 30);
-    uint totalInterestRate =  SafeMath.mul(numOfMonths, interestRate);
-    uint totalInterestDue = SafeMath.mul(totalInterestRate, loanAmount);
+    uint numOfMonths = SafeMath.div(loanArgs.loanDuration, 30);
+    uint totalInterestRate =  SafeMath.mul(numOfMonths, loanArgs.interestRate);
+    uint totalInterestDue = SafeMath.mul(totalInterestRate, loanArgs.loanAmount);
     int128 realInterestDue = ABDKMath64x64.divu(totalInterestDue, 100);
     uint unsignedRealInterestDue = ABDKMath64x64.toUInt(realInterestDue);
-    uint _totalAmountDue = SafeMath.add(unsignedRealInterestDue, loanAmount);
+    uint _totalAmountDue = SafeMath.add(unsignedRealInterestDue, loanArgs.loanAmount);
 
     // add loan to allLoans array 
     allLoans[numOfLoans] = Loan({
       loanID: numOfLoans,
-      lender: payable(lender),
-      borrower: payable(borrower),
-      NFTtokenID: NFTtokenID,
-      NFTtokenAddress: NFTtokenAddress,
-      loanAmount: loanAmount,
+      lender: loanArgs.lender,
+      borrower: loanArgs.borrower,
+      NFTtokenID: loanArgs.NFTtokenID,
+      NFTtokenAddress: loanArgs.NFTtokenAddress,
+      loanAmount: loanArgs.loanAmount,
       totalAmountDue: _totalAmountDue,
-      interestRate: interestRate,
+      interestRate: loanArgs.interestRate,
       loanCreatedTimeStamp: block.timestamp,
-      loanDuration: loanDuration,
+      loanDuration: loanArgs.loanDuration,
       loanCompleteTimeStamp: _loanCompleteTimeStamp,
       status: Status.ACTIVE
     });
 
     // store loan id in user arrays for easier read access
-    userBorrow[borrower].push(numOfLoans);
-    userLend[lender].push(numOfLoans);
+    userBorrow[loanArgs.borrower].push(numOfLoans);
+    userLend[loanArgs.lender].push(numOfLoans);
 
     // adjust nums of loans according and emit event
     numOfLoans = SafeMath.add(numOfLoans, 1);

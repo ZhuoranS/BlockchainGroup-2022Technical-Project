@@ -54,7 +54,7 @@ contract('P2PLoan', (accounts) => {
     it('should create a new loan betweene first and second ', async () => {
       // change to your own acc on ganache
       //assert.equal(accounts[0], 0x91dF6A7B8cF1507dbda938d135C0C7b956082689)
-      assert.equal(accounts[0], 0xa9B4d84329C337827Fa174d34B0972815b5fbB43)
+      assert.equal(accounts[0], acc1)
     it('should increase numOfLoans', async () => {
         // creates a new loan
       const args = new loanArgs(
@@ -68,17 +68,7 @@ contract('P2PLoan', (accounts) => {
       );
 
       await contract.createLoan.sendTransaction(
-        [
-          accounts[0], // lender address
-          accounts[1], // borrower address
-          accounts[2], // token address
-        ],
-        [
-          0, // token id
-          100, // loan amount
-          2,  // monthly interest rate 
-          30, // loan duration in days, 
-        ],
+        loanArgs,
         { from: accounts[0], gas:3000000} // sent from the lender
       );
 
@@ -117,19 +107,19 @@ contract('P2PLoan', (accounts) => {
   
   describe('repay loan', async () => {
     it('loan status changed', async () => {
+      // creates a new loan
+      const args = new loanArgs(
+        accounts[2], // lender address
+        accounts[9], // borrower address
+        0, // token id
+        accounts[4], // token address
+        1, // loan amount
+        100,  // monthly interest rate 
+        30, // loan duration in days
+      );
 
       await contract.createLoan.sendTransaction(
-        [
-          accounts[2], // lender address
-          accounts[9], // borrower address
-          accounts[4], // token address
-        ],
-        [
-          0, // token id
-          1, // loan amount
-          100,  // monthly interest rate 
-          30, // loan duration in days, 
-        ],
+        loanArgs,
         { from: accounts[0], gas:3000000} // sent from the lender
       );
 
@@ -159,17 +149,7 @@ contract('P2PLoan', (accounts) => {
     );
 
     await contract.createLoan.sendTransaction(
-      [
-        accounts[2], // lender address
-        accounts[0], // borrower address
-        accounts[4], // token address
-      ],
-      [
-        0, // token id
-        5, // loan amount
-        50,  // monthly interest rate 
-        30, // loan duration in days, 
-      ],
+      loanArgs,
       { from: accounts[0], gas:3000000} // sent from the lender
     );
 
@@ -188,6 +168,7 @@ contract('P2PLoan', (accounts) => {
     assert.equal(1 + 1 == 2, true, "borrower balance not changed")
   })
 })
+
 
 
 /*
@@ -226,4 +207,5 @@ contract('P2PLoan', (accounts) => {
     })
   })
 */
+  })
 })
