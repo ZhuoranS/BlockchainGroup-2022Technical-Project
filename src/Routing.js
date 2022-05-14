@@ -9,6 +9,7 @@ import Explore from "./pages/Explore";
 import DetailedPost from "./pages/DetailedPost";
 import EditProfile from "./pages/EditProfile";
 import ExpandedPost from "./components/ExpandedPost";
+import SelectBid from "./pages/SelectBid";
 
 const Routing = () => {
   return (
@@ -20,6 +21,7 @@ const Routing = () => {
           <Route path="/explore" component={Explore} />
           <Route path="/p/:postAddress" component={DetailedPost} />
           <Route path="/e/:postAddress" component={ExpandedPost} />
+          <Route path="/select/:postAddress" component={SelectBid} />
           <Route path="/accounts/edit" component={EditProfile} />
           <Route path="/:address" component={Profile} />
         </Switch>
