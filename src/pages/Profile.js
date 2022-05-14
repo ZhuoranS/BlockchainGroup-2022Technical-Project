@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import PostPreview from "../components/PostPreview";
@@ -11,6 +11,7 @@ import ExpandedPost from "../components/ExpandedPost"
 import CreatePost from "../components/CreatePost"
 import Post from "../components/Post";
 import {post1} from "../utils/FakeBackend";
+import { UserContext } from "../context/UserContext";
 
 const Wrapper = styled.div`
   
@@ -46,11 +47,13 @@ const Profile = () => {
   const [tab, setTab] = useState("BIDS");
 
   const { address } = useParams();
+  const {user} = useContext(UserContext);
   const [profile, setProfile] = useState({});
   const [loading, setLoading] = useState(true);
   const [deadend, setDeadend] = useState(false);
 
   useEffect(() => {
+    console.log(address)
     window.scrollTo(0, 0);
     client(`/${address}`)
       .then((res) => {
