@@ -1,4 +1,4 @@
-import React, {useContext} from "react";
+import React, {useContext, useState} from "react";
 import {Link} from "react-router-dom";
 import styled from "styled-components";
 import Search from "./Search";
@@ -7,9 +7,13 @@ import {HomeIcon, CloseIcon, SearchIcon, ExploreIcon, HeartIcon} from "./Icons";
 import {toast} from "react-toastify";
 import Button from "../styles/Button";
 import {client} from "../utils";
+import CreatePost from "./CreatePost";
+import CreateNFT from "./CreateNFT";
+import {post1} from "../utils/FakeBackend";
 
 import {user1} from "../utils/FakeBackend";
 import Web3 from "web3";
+import Explore from "../pages/Explore";
 
 const NavWrapper = styled.div`
   position: fixed;
@@ -47,6 +51,10 @@ const NavWrapper = styled.div`
     align-items: center;
   }
 
+  .modal-button {
+      margin: 0 1rem;
+  }
+
   @media screen and (max-width: 970px) {
     nav {
       width: 90%;
@@ -55,7 +63,9 @@ const NavWrapper = styled.div`
 `;
 
 const Nav = () => {
-    const {user, setUser} = useContext(UserContext);
+    const { user, setUser } = useContext(UserContext);
+    const [ auctionModalOpen, setAuctionModalOpen ] = useState(false)
+    const [ nftModalOpen, setNftModalOpen ] = useState(false)
     const { ethereum } = window
 
     const handleDisconnect = () => {
@@ -84,10 +94,25 @@ const Nav = () => {
     return (
         <NavWrapper>
             <nav>
-                <Search/>
+                {user ? (
+                    <div>
+                        <Button 
+                            className="modal-button" 
+                            onClick={() => setAuctionModalOpen(true)}>
+                            Create Auction
+                        </Button>
+                        <Button 
+                            className="modal-button"  
+                            onClick={() => setNftModalOpen(true)}>
+                            Create NFT
+                        </Button>
+                    </div>
+                ) : (
+                    <div></div>
+                )}
                 <ul>
                     <li>
-                        <Link to="/explore">
+                        <Link to="/">
                             <ExploreIcon/>
                         </Link>
                     </li>
@@ -112,7 +137,7 @@ const Nav = () => {
                     )}
                     {user ? (
                         <li>
-                            <Link to="/explore">
+                            <Link to="/">
                                 <Button secondary onClick={() => handleDisconnect()}>
                                     disconnect
                                 </Button>
@@ -127,6 +152,8 @@ const Nav = () => {
                     )}
                 </ul>
             </nav>
+            <CreatePost key={1} post={post1} open={auctionModalOpen} onClose={() => setAuctionModalOpen(false)}/>
+            <CreateNFT key={1} post={post1} open={nftModalOpen} onClose={() => setNftModalOpen(false)}/>
         </NavWrapper>
     );
 };

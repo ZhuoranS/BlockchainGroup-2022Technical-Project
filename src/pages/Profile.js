@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import PostPreview from "../components/PostPreview";
@@ -11,6 +11,7 @@ import ExpandedPost from "../components/ExpandedPost"
 import CreatePost from "../components/CreatePost"
 import Post from "../components/Post";
 import {post1} from "../utils/FakeBackend";
+import { UserContext } from "../context/UserContext";
 
 const Wrapper = styled.div`
   
@@ -46,11 +47,13 @@ const Profile = () => {
   const [tab, setTab] = useState("BIDS");
 
   const { address } = useParams();
+  const {user} = useContext(UserContext);
   const [profile, setProfile] = useState({});
   const [loading, setLoading] = useState(true);
   const [deadend, setDeadend] = useState(false);
 
   useEffect(() => {
+    console.log(address)
     window.scrollTo(0, 0);
     client(`/${address}`)
       .then((res) => {
@@ -84,39 +87,31 @@ const Profile = () => {
           style={{ fontWeight: tab === "BIDS" ? "500" : "" }}
           onClick={() => setTab("BIDS")}
         >
-          <SavedIcon />
+          <SavedIcon  icon="BIDS" tabId={tab}/>
           <span>Bids</span>
         </div>
         <div
           style={{ fontWeight: tab === "BORROW" ? "500" : "" }}
           onClick={() => setTab("BORROW")}
         >
-          <SavedIcon />
+          <SavedIcon  icon="BORROW" tabId={tab}/>
           <span>Borrow</span>
         </div>
         <div
             style={{ fontWeight: tab === "LEND" ? "500" : "" }}
             onClick={() => setTab("LEND")}
         >
-          <SavedIcon />
+          <SavedIcon   icon="LEND" tabId={tab}/>
           <span>Lend</span>
         </div>
         <div
             style={{ fontWeight: tab === "HISTORY" ? "500" : "" }}
             onClick={() => setTab("HISTORY")}
         >
-          <SavedIcon />
+          <SavedIcon    icon="HISTORY" tabId={tab}/>
           <span>History</span>
         </div>
-        {profile?.isMe &&
-          <div
-              style={{ fontWeight: tab === "CREATE" ? "500" : "" }}
-              onClick={() => setTab("CREATE")}
-          >
-            <SavedIcon />
-            <span>Create</span>
-          </div>
-        }
+        
       </div>
 
       {tab === "BIDS" && (
@@ -145,9 +140,8 @@ const Profile = () => {
           ) : (
             <div>
               {/* TODO: make sure to return only posts user has borrowed */}
-              {profile?.borrowPosts?.map((post) => (
-                  <ExpandedPost key={post._id} post={post} />
-              ))}
+              <PostPreview posts={profile?.borrowPosts} />
+
             </div>
           )}
         </>
@@ -164,9 +158,8 @@ const Profile = () => {
             ) : (
                 <div>
                   {/* TODO: make sure to return only posts user has lent */}
-                  {profile?.loanPosts?.map((post) => (
-                      <ExpandedPost key={post._id} post={post} />
-                  ))}
+                  <PostPreview posts={profile?.loanPosts} active={false}/>
+
                 </div>
             )}
           </>
@@ -184,18 +177,13 @@ const Profile = () => {
                 <div>
                   {/* TODO: make sure to return only posts user has already completed */}
                   {profile?.history?.map((post) => (
-                      <ExpandedPost key={post._id} post={post} />
+                      <ExpandedPost key={post._id} prop_post={post} />
                   ))}
                 </div>
             )}
           </>
       )}
 
-      {tab === "CREATE" && (
-          <>
-            <CreatePost key={1} post={post1} />
-          </>
-      )}
     </Wrapper>
   );
 };

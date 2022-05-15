@@ -42,17 +42,26 @@ export const PostWrapper = styled.div`
 
 `;
 
-const Post = ({post}) => {
+const Post = ({ post }) => {
   const history = useHistory();
 
   return (
       <PostWrapper>
         <div className="img-wrapper">
-          <img
-              onClick={() => history.push(`/p/${post.address}`)}
-              src={post.file}
-              alt="post-img"
-          />
+          {post.status === "bidding" ?
+            <img
+                onClick={() => history.push(`/p/${post.address}`)}
+                src={post.file}
+                alt="post-img"
+            />
+            :
+            <img
+                onClick={() => history.push(`/e/${post.address}`)}
+                src={post.file}
+                alt="post-img"
+            />
+            
+          }
         </div>
 
 

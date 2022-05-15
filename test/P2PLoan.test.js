@@ -51,29 +51,37 @@ contract('P2PLoan', (accounts) => {
   })
 
   describe('create loan', async () => {
-<<<<<<< HEAD
     it('should create a new loan betweene first and second ', async () => {
       // change to your own acc on ganache
-<<<<<<< HEAD
       //assert.equal(accounts[0], 0x91dF6A7B8cF1507dbda938d135C0C7b956082689)
-=======
-      assert.equal(accounts[0], 0xa9B4d84329C337827Fa174d34B0972815b5fbB43)
->>>>>>> e42682f82209ace41b1842af904100387d1a0409
-=======
+      assert.equal(accounts[0], acc1)
+    })
+
     it('should increase numOfLoans', async () => {
         // creates a new loan
-      const args = new loanArgs(
-        accounts[0], // lender address
-        accounts[1], // borrower address
-        0, // token id
-        accounts[2], // token address
-        100, // loan amount
-        2,  // monthly interest rate 
-        30, // loan duration in days
-      );
+      // const args = new loanArgs(
+      //   accounts[0], // lender address
+      //   accounts[1], // borrower address
+      //   0, // token id
+      //   accounts[2], // token address
+      //   100, // loan amount
+      //   2,  // monthly interest rate 
+      //   30, // loan duration in days
+      // );
 
       await contract.createLoan.sendTransaction(
-        args, { from: accounts[0], gas:3000000} // sent from the lender
+        [
+          accounts[0], // lender address
+          accounts[1], // borrower address
+          accounts[2], // token address
+        ],
+        [
+          0, // token id
+          2, // loan amount
+          100,  // monthly interest rate 
+          60, // loan duration in days
+        ],
+        { from: accounts[0], gas:3000000} // sent from the lender
       );
 
       const n = await contract.numOfLoans.call();
@@ -87,10 +95,9 @@ contract('P2PLoan', (accounts) => {
       assert.equal(loan.borrower, accounts[1], "borrower address incorrect")
       assert.equal(loan.NFTtokenID, 0, "TokenID incorrect")
       assert.equal(loan.NFTtokenAddress, accounts[2], "token address incorrect")
-      assert.equal(loan.loanAmount, 100, "loan amount incorrect")
-      assert.equal(loan.totalAmountDue, 102, "loan amount due incorrect")
-      assert.equal(loan.interestRate, 2, "loan interest incorrect")
-      assert.equal(loan.loanDuration, 30, "duration incorrect")
+      assert.equal(loan.loanAmount, 2, "loan amount incorrect")
+      assert.equal(loan.interestRate, 100, "loan interest incorrect")
+      assert.equal(loan.loanDuration, 60, "duration incorrect")
       assert.equal(loan.status, 0, "status incorrect")
     })
 
@@ -98,107 +105,97 @@ contract('P2PLoan', (accounts) => {
       const loan = await contract.getLoan.call(0);
       const startTime = Number(loan.loanCreatedTimeStamp)
       const endTime = startTime + loan.loanDuration * 86400
-
       assert.equal(loan.loanCompleteTimeStamp, endTime, "complete time stamp incorrect")
     })
 
     it('should calculate totalAmountDue', async () => {
       const loan = await contract.getLoan.call(0);
       const totalAmountDue = Number(loan.totalAmountDue)
-      assert.equal(totalAmountDue, 102, "total amount due incorrect")
+      assert.equal(totalAmountDue, 6, "total amount due incorrect")
     })
   })
   
   describe('repay loan', async () => {
     it('loan status changed', async () => {
       // creates a new loan
-      const args = new loanArgs(
-        accounts[2], // lender address
-        accounts[9], // borrower address
-        0, // token id
-        accounts[4], // token address
-        1, // loan amount
-        100,  // monthly interest rate 
-        30, // loan duration in days
-      );
+      // const args = new loanArgs(
+      //   accounts[2], // lender address
+      //   accounts[9], // borrower address
+      //   99, // token id
+      //   accounts[4], // token address
+      //   1, // loan amount
+      //   100,  // monthly interest rate 
+      //   30, // loan duration in days
+      // );
+
       await contract.createLoan.sendTransaction(
-        args, { from: accounts[0], gas:3000000} // sent from the lender
+        [
+          accounts[2], // lender address
+          accounts[9], // borrower address
+          accounts[4], // token address
+        ],
+        [
+          1, // token id
+          1, // loan amount
+          100,  // monthly interest rate 
+          30, // loan duration in days
+        ],
+        { from: accounts[0], gas:3000000} // sent from the lender
       );
 
       await contract.repayLoan.sendTransaction(
-          1, 
+          1, // loan id
           { 
             from: accounts[9], 
-            value: web3.utils.toWei("2", "ether"),
+            value: web3Utils.toWei("0.001", "ether"),
             gas:3000000
           }
         );
-
       const loan = await contract.getLoan.call(1);
       assert.equal(loan.status, 1, "status incorrect")
     })
 
-  it('balance changed', async () => {
-    // creates a new loan
-    const args = new loanArgs(
-      accounts[2], // lender address
-      accounts[0], // borrower address
-      0, // token id
-      accounts[4], // token address
-      5, // loan amount
-      50,  // monthly interest rate 
-      30, // loan duration in days
-    );
+    it('balance changed', async () => {
+      // creates a new loan
+      // const args = new loanArgs(
+      //   accounts[2], // lender address
+      //   accounts[0], // borrower address
+      //   0, // token id
+      //   accounts[4], // token address
+      //   5, // loan amount
+      //   50,  // monthly interest rate 
+      //   30, // loan duration in days
+      // );
 
-    await contract.createLoan.sendTransaction(
-      args, { from: accounts[0], gas:3000000} // sent from the lender
-    );
-
-    // const initBalance = await await contract.balanceOf(accounts[8])
-
-    await contract.repayLoan.sendTransaction(
-        2,  // loan id
-        { 
-          from: accounts[0], 
-          value: web3.utils.toWei("10", "ether"), // sending in transaction with value of 1 eth
-          gas:3000000
-        }
+      await contract.createLoan.sendTransaction(
+        [
+          accounts[2], // lender address
+          accounts[0], // borrower address
+          accounts[4], // token address
+        ],
+        [
+          0, // token id
+          5, // loan amount
+          100,  // monthly interest rate 
+          30, // loan duration in days
+        ],
+        { from: accounts[0], gas:3000000} // sent from the lender
       );
-    
-    // const finalBalance = await contract.balanceOf(accounts[8])
-    assert.equal(1 + 1 == 2, true, "borrower balance not changed")
-})
 
-    // it('should repay loan', async () => {
-    //   const args = new loanArgs(
-    //     accounts[0], // lender address
-    //     accounts[1], // borrower address
-    //     0, // token id
-    //     accounts[2], // token address
-    //     2, // loan amount
-    //     50,  // monthly interest rate 
-    //     30, // loan duration in days
-    //   );
-  
-    //   await contract.createLoan.sendTransaction(
-    //     args, { from: accounts[9], gas:300000000000} 
-    //   );
-    //   // const initialBalance = await contract.getBalance.call(accounts[1])
+      // const initBalance = await await contract.balanceOf(accounts[8])
 
-    //   // await contract.repayLoan.sendTransaction(
-    //   //   0, 
-    //   //   { from: accounts[1], 
-    //   //     value: Web3.utils.toWei(1, "ether"), 
-    //   //     gas:3000000000000}
-    //   // );
+      await contract.repayLoan.sendTransaction(
+          2,  // loan id
+          { 
+            from: accounts[0], 
+            value: web3Utils.toWei("10", "ether"), // sending in transaction with value of 1 eth
+            gas:3000000
+          }
+        );
       
-    //   // const loan = await contract.getLoan.call(0);
-
-    //   // const finalBalance = await contract.getBalance.call(accounts[1])
-
-    //   // assert.equal(loan.status, 1, "status incorrect")
-    //   // assert.equal(finalBalance - initialBalance > 10.2, true, "balance incorrect")
-    // })
+      // const finalBalance = await contract.balanceOf(accounts[8])
+      assert.equal(1 + 1 == 2, true, "borrower balance not changed")
+    })
   })
 
 

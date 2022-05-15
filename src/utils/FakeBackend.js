@@ -1,8 +1,8 @@
 const user1Brief = {
-    "username" : "0x91dF6A",
+    "username" : "USERNAME",
     "avatar" : "https://www.w3schools.com/css/img_lights.jpg",
     "isMe" : true,
-    "address": "0x91dF6A7B8cF1507dbda938d135C0C7b956082689",
+    "address": "0xF8BB302b69a037E3f260084558670976CF701Ac1",
 };
 const user2Brief = {
     "username" : "0xE64F63",

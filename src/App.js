@@ -48,16 +48,14 @@ const App = () => {
         if (constructorHasRun) return;
         await loadWeb3();
         await loadAddress();
-        if (user) {
-            client("/auth/me").then((res) => {
-                setUser(res.data);
-                setLoading(false);
-            });
-        }
+        setLoading(false)
         setConstructorHasRun(true);
     }
-    fetchData();
 
+    useEffect(() => {
+        fetchData();
+    }, [])
+    
     if (loading) {
         return <Loader />;
     }
