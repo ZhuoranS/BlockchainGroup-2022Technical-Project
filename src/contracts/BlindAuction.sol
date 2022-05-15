@@ -288,7 +288,6 @@ contract BlindAuction {
     // delete an Auction
     function deleteAuction(address NFT_contract_address,uint32 NFT_tokenID) public 
     {
-        delete Auction_Objects[NFT_contract_address][NFT_tokenID];
         uint32 index = 0;
         bool found;
         for(uint32 i = 0; i < Auction_Objects_count; i++){
@@ -301,6 +300,7 @@ contract BlindAuction {
         }
         require(found,"Error occurred");
         delete Auction_Objects_array[index];
+        delete Auction_Objects[NFT_contract_address][NFT_tokenID];
         Auction_Objects_count -= 1;
     }
 
