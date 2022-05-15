@@ -30,7 +30,7 @@ contract('Integration', (accounts) => {
       
       const token_URI_1 = "https://ipfs.io/ipfs/Qmd9MCGtdVz2miNumBHDbvj8bigSgTwnr4SbyH6DNnpWdt?filename=1-PUG.json"
       // somehow token_id_1 returned is not an int.
-      await nft_contract.createToken(token_URI_1,'NFT 1',{from:accounts[0]})
+      await nft_contract.createToken(token_URI_1,{from:accounts[0]})
       console.log(token_id_1)
       const token_id_1 = await nft_contract.getLatestId()
       assert.equal(token_id_1, 1)
@@ -41,7 +41,7 @@ contract('Integration', (accounts) => {
     })
     it('User A start an auction: lock NFT', async () =>{
       const tokenURI = "testToken"
-      await nft_contract.createToken(tokenURI,'NFT_Lock_Test',{from:accounts[0]})
+      await nft_contract.createToken(tokenURI,{from:accounts[0]})
       const tokenID = await nft_contract.getLatestId()
 
       await nft_contract.approve(market_contract.address,tokenID,{from:accounts[0]})

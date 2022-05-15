@@ -109,7 +109,7 @@ contract BlindAuction {
         auctionObj.beneficiary = payable(msg.sender);
         auctionObj.min_loan_amount = min_loan_amount;
         auctionObj.max_interest_rate = max_interest_rate;
-        auctionObj.min_repayment_period = min_repayment_period;
+        auctionObj.min_repayment_period = min_repayment_period * 1 days;
         auctionObj.NFT_contract_address = NFT_contract_address;
         auctionObj.NFT_tokenID = NFT_tokenID;
         auctionObj.auctionEndTime = block.timestamp + auction_duration * 1 hours;
@@ -288,7 +288,6 @@ contract BlindAuction {
     // delete an Auction
     function deleteAuction(address NFT_contract_address,uint32 NFT_tokenID) public 
     {
-        delete Auction_Objects[NFT_contract_address][NFT_tokenID];
         uint32 index = 0;
         bool found;
         for(uint32 i = 0; i < Auction_Objects_count; i++){
@@ -301,6 +300,7 @@ contract BlindAuction {
         }
         require(found,"Error occurred");
         delete Auction_Objects_array[index];
+        delete Auction_Objects[NFT_contract_address][NFT_tokenID];
         Auction_Objects_count -= 1;
     }
 
