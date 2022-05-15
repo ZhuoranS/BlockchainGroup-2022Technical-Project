@@ -109,7 +109,7 @@ contract BlindAuction {
         auctionObj.beneficiary = payable(msg.sender);
         auctionObj.min_loan_amount = min_loan_amount;
         auctionObj.max_interest_rate = max_interest_rate;
-        auctionObj.min_repayment_period = min_repayment_period;
+        auctionObj.min_repayment_period = min_repayment_period * 1 days;
         auctionObj.NFT_contract_address = NFT_contract_address;
         auctionObj.NFT_tokenID = NFT_tokenID;
         auctionObj.auctionEndTime = block.timestamp + auction_duration * 1 hours;
