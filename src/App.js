@@ -6,7 +6,7 @@ import GlobalStyle from "./styles/GlobalStyle";
 import Routing from "./Routing";
 import {UserContext} from "./context/UserContext";
 import {ThemeContext} from "./context/ThemeContext";
-import { init } from "./utils/Web3Client";
+import { initUser, initContracts } from "./utils/Web3Client";
 
 import Web3 from 'web3'
 import {user1} from "./utils/FakeBackend";
@@ -24,9 +24,10 @@ const App = () => {
         if (constructorHasRun) return;
 
         setUser({
-            "address" : await init()
+            "address" : await initUser()
         });
-        
+        // initContracts();
+
         setLoading(false);
         setConstructorHasRun(true);
     }, [])

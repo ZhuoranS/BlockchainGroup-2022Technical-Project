@@ -3,9 +3,19 @@ import {toast, ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {UserContext} from "../context/UserContext";
 
+import BlindAuction from '../abis/BlindAuction.json';
+import Migrations from '../abis/Migrations.json';
+import NFTManager from '../abis/NFTManager.json';
+import NFTMarketplace from '../abis/NFTMarketplace.json';
+import P2PLoan from '../abis/P2PLoan.json';
+import Posts from '../abis/Posts.json';
+
 import Web3 from 'web3';
 
-export const init = () => {
+let NFTMarketplaceContract;
+let NFLManagerContract;
+
+export const initUser = () => {
 
     const loadWeb3 = async () => {
         if (window.ethereum) {
@@ -42,3 +52,45 @@ export const init = () => {
 
     return fetchData();
 }
+
+export const initContracts = async () => {
+    let provider = window.ethereum;
+
+    const web3 = new Web3(provider);
+    const networkId = await web3.eth.net.getId();
+
+    NFTMarketplaceContract = new web3.eth.Contract(
+        NFTMarketplace.abi, 
+        NFTMarketplace.networks[networkId].address
+    );
+
+    NFTManagerContract = new web3.eth.Contract(
+        NFTManager.abi,
+        NFTManager.networks[networkId].address
+    )
+
+    BlindAuctionContract = new web3.eth.Contract(
+        BlindAuction.abi, 
+        BlindAuction.networks[networkId].address
+    );
+
+    P2PLoanContract = new web3.eth.Contract(
+        P2PLoan.abi,
+        P2PLoan.networks[networkId].address
+    )
+}
+
+// NFT Manager Functions
+
+
+
+// NFT Marketplace Functions
+
+
+
+// Blind Auction Functions
+
+
+
+// P2P Loan Functions
+
