@@ -53,7 +53,6 @@ const Profile = () => {
   const [deadend, setDeadend] = useState(false);
 
   useEffect(() => {
-    console.log(address)
     window.scrollTo(0, 0);
     client(`/${address}`)
       .then((res) => {

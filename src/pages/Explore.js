@@ -11,6 +11,8 @@ import {FeedContext} from "../context/FeedContext";
 import Web3 from 'web3'
 import {user1} from "../utils/FakeBackend";
 
+import { getAllAuctionObjects } from "../utils/Web3Client";
+
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -38,6 +40,14 @@ const Explore = () => {
       setFeed(res.data);
       setLoading(false);
     });
+
+    getAllAuctionObjects()
+      .then(res => {
+        console.log(res)
+      })
+      .catch(err => {
+        console.log(err)
+      })
 
   }, [setFeed]);
 

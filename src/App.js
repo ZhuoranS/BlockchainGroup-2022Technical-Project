@@ -26,7 +26,7 @@ const App = () => {
         setUser({
             "address" : await initUser()
         });
-        // initContracts();
+        initContracts();
 
         setLoading(false);
         setConstructorHasRun(true);
