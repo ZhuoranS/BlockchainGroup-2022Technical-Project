@@ -9,6 +9,8 @@ import {toast} from "react-toastify";
 import Button from "../styles/Button";
 import { FeedContext } from "../context/FeedContext";
 
+import { createToken } from "../utils/Web3Client";
+
 export const CreateNFTWrapper = styled.div`
   
   .modal {
@@ -120,11 +122,13 @@ const CreateNFT = ({open, onClose}) => {
     // if modal is not open, return null
     if (!open) return null;
 
-    const handleSubmitPost = () => {
+    const handleSubmitPost = async () => {
         // all fields must be filled
         if (!(imageURI.value && description.value )) {
             return toast.error("Please write something");
         }
+
+        await createToken(imageURI.value);
 
         toast.success("Your post has been submitted successfully");
     }

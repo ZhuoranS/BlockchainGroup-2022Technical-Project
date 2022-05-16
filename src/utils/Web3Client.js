@@ -98,11 +98,11 @@ export const initContracts = async () => {
 
 // NFT Manager Functions
 export const createToken = (tokenURI) => {
-    NFTManagerContract.methods.createToken(tokenURI).send({ from: selectedUser });
+    return NFTManagerContract.methods.createToken(tokenURI).send({ from: selectedUser });
 }
 
 export const getLatestId = () => {
-    NFTManagerContract.methods.getLatestId();
+    return NFTManagerContract.methods.getLatestId().call();
 }
 
 // NFT Marketplace Functions
