@@ -93,6 +93,9 @@ export const initContracts = async () => {
         P2PLoan.networks[networkId].address
     )
 
+    console.log(NFTManager)
+    console.log(NFTManagerContract)
+
     isContractInitialized = true;
 }
 
@@ -103,6 +106,17 @@ export const createToken = (tokenURI) => {
 
 export const getLatestId = () => {
     return NFTManagerContract.methods.getLatestId().call();
+}
+
+export const ownerOf = (tokenId) => {
+    return NFTManagerContract.methods.ownerOf(tokenId).call()
+}
+
+export const getTokenURI = async (tokenId) => {
+    if (!isUserInitialized) await initUser();
+    if (!isContractInitialized) await initContracts();
+
+    return NFTManagerContract.methods.tokenURI(tokenId).call();
 }
 
 // NFT Marketplace Functions
@@ -130,7 +144,7 @@ export const selectWinningBid = (selectedLender, bidId, NFTContractAddress, toke
 }
 
 export const getAllAuctionObjects = async () => {
-    if (!isUserInitialized) await initUser()
+    if (!isUserInitialized) await initUser();
     if (!isContractInitialized) await initContracts();
 
     return BlindAuctionContract.methods.getAllAuctionObjects().call();
