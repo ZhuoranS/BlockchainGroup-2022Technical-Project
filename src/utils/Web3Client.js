@@ -104,11 +104,17 @@ export const createToken = (tokenURI) => {
     return NFTManagerContract.methods.createToken(tokenURI).send({ from: selectedUser });
 }
 
-export const getLatestId = () => {
+export const getLatestId = async () => {
+    if (!isUserInitialized) await initUser();
+    if (!isContractInitialized) await initContracts();
+
     return NFTManagerContract.methods.getLatestId().call();
 }
 
-export const ownerOf = (tokenId) => {
+export const ownerOf = async (tokenId) => {
+    if (!isUserInitialized) await initUser();
+    if (!isContractInitialized) await initContracts();
+
     return NFTManagerContract.methods.ownerOf(tokenId).call()
 }
 

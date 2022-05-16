@@ -13,6 +13,8 @@ import Post from "../components/Post";
 import {post1} from "../utils/FakeBackend";
 import { UserContext } from "../context/UserContext";
 
+import { getTokenURI, ownerOf, getLatestId } from "../utils/Web3Client";
+
 const Wrapper = styled.div`
   
   .profile-tab {
@@ -52,7 +54,31 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [deadend, setDeadend] = useState(false);
 
-  useEffect(() => {
+  const [userNFTs, setUserNFTs] = useState([])
+  const [latestId, setLatestId] = useState(-1)
+
+  const getOwnedNFTs = async (currLatestId) => {
+    let ownedNFTs = [];
+    console.log(user.address)
+    console.log(currLatestId)
+
+    for (var i = 1; i <= currLatestId; i++) {
+      let tokenURI = await getTokenURI(i)
+      
+      if ((await ownerOf(i)) == user.address) {
+        ownedNFTs.push(
+          {
+            "tokenId": i,
+            "tokenInfo": (await (await fetch(tokenURI)).json())
+          }
+        )
+      }
+    }
+
+    return ownedNFTs;
+  }
+
+  useEffect(async () => {
     window.scrollTo(0, 0);
     client(`/${address}`)
       .then((res) => {
@@ -61,6 +87,13 @@ const Profile = () => {
         setProfile(res.data);
       })
       .catch((err) => setDeadend(true));
+
+    getLatestId()
+      .then(async (res) => {
+        setLatestId(res.toNumber());
+        setUserNFTs(await getOwnedNFTs(res.toNumber()));
+      })
+    
   }, [address]);
 
   if (!deadend && loading) {

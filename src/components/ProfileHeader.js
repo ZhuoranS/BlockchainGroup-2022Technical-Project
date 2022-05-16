@@ -117,7 +117,7 @@ const ProfileHeader = ({ profile }) => {
           </div>
 
           <div className="profile-stats">
-            <span>{profile?.address}</span>
+            <span>{user.address}</span>
           </div>
         </div>
       </Wrapper>
