@@ -12,6 +12,7 @@ import CreatePost from "../components/CreatePost"
 import Post from "../components/Post";
 import {post1} from "../utils/FakeBackend";
 import { UserContext } from "../context/UserContext";
+import NFTPreview from "../components/NFTPreview";
 
 import { getTokenURI, ownerOf, getLatestId } from "../utils/Web3Client";
 
@@ -78,7 +79,7 @@ const Profile = () => {
     return ownedNFTs;
   }
 
-  useEffect(async () => {
+  useEffect(() => {
     window.scrollTo(0, 0);
     client(`/${address}`)
       .then((res) => {
@@ -142,6 +143,13 @@ const Profile = () => {
         >
           <SavedIcon    icon="HISTORY" tabId={tab}/>
           <span>History</span>
+        </div>
+        <div
+            style={{ fontWeight: tab === "MY_NFTS" ? "500" : "" }}
+            onClick={() => setTab("MY_NFTS")}
+        >
+          <SavedIcon    icon="MY_NFTS" tabId={tab}/>
+          <span>My NFT's</span>
         </div>
         
       </div>
@@ -214,6 +222,23 @@ const Profile = () => {
                 </div>
             )}
           </>
+      )}
+
+      {tab === "MY_NFTS" && (
+        <>
+          {userNFTs.length === 0 ? (
+              <Placeholder
+                  title="My NFT's"
+                  text="Minted NFT's will show here"
+                  icon="bookmark"
+              />
+          ) : (
+              <div>
+                <NFTPreview nfts={userNFTs} />
+
+              </div>
+          )}
+        </>
       )}
 
     </Wrapper>
