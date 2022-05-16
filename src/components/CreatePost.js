@@ -201,11 +201,11 @@ const CreatePost = ({ open, onClose, post }) => {
 
     // handle carousel sliding
     const onContinue = () => {
-      setActiveModalPage(activeModalPage + 1)
+      setActiveModalPage(activeModalPage + 2)
     }
 
     const onBack = () => {
-      setActiveModalPage(activeModalPage - 1)
+      setActiveModalPage(activeModalPage - 2)
     }
 
     return (
@@ -269,7 +269,10 @@ const CreatePost = ({ open, onClose, post }) => {
             </ul>
           </div>
 
-          {/* Summary Page (Page 2) */}
+          {/* Blank Page (Page 2) */}
+          <div className="modal-page" id="blank-page"></div>
+
+          {/* Summary Page (Page 3) */}
           <div className="modal-page" id="summary-page">
 
             {/* TODO: FINISH PAGE (Can create component elsewhere and import here) */}

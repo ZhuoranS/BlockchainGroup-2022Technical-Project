@@ -12,6 +12,9 @@ import CreatePost from "../components/CreatePost"
 import Post from "../components/Post";
 import {post1} from "../utils/FakeBackend";
 import { UserContext } from "../context/UserContext";
+import NFTPreview from "../components/NFTPreview";
+
+import { getTokenURI, ownerOf, getLatestId } from "../utils/Web3Client";
 
 const Wrapper = styled.div`
   
@@ -52,8 +55,31 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [deadend, setDeadend] = useState(false);
 
+  const [userNFTs, setUserNFTs] = useState([])
+  const [latestId, setLatestId] = useState(-1)
+
+  const getOwnedNFTs = async (currLatestId) => {
+    let ownedNFTs = [];
+    console.log(user.address)
+    console.log(currLatestId)
+
+    for (var i = 1; i <= currLatestId; i++) {
+      let tokenURI = await getTokenURI(i)
+      
+      if ((await ownerOf(i)) == user.address) {
+        ownedNFTs.push(
+          {
+            "tokenId": i,
+            "tokenInfo": (await (await fetch(tokenURI)).json())
+          }
+        )
+      }
+    }
+
+    return ownedNFTs;
+  }
+
   useEffect(() => {
-    console.log(address)
     window.scrollTo(0, 0);
     client(`/${address}`)
       .then((res) => {
@@ -62,6 +88,13 @@ const Profile = () => {
         setProfile(res.data);
       })
       .catch((err) => setDeadend(true));
+
+    getLatestId()
+      .then(async (res) => {
+        setLatestId(res.toNumber());
+        setUserNFTs(await getOwnedNFTs(res.toNumber()));
+      })
+    
   }, [address]);
 
   if (!deadend && loading) {
@@ -110,6 +143,13 @@ const Profile = () => {
         >
           <SavedIcon    icon="HISTORY" tabId={tab}/>
           <span>History</span>
+        </div>
+        <div
+            style={{ fontWeight: tab === "MY_NFTS" ? "500" : "" }}
+            onClick={() => setTab("MY_NFTS")}
+        >
+          <SavedIcon    icon="MY_NFTS" tabId={tab}/>
+          <span>My NFT's</span>
         </div>
         
       </div>
@@ -182,6 +222,23 @@ const Profile = () => {
                 </div>
             )}
           </>
+      )}
+
+      {tab === "MY_NFTS" && (
+        <>
+          {userNFTs.length === 0 ? (
+              <Placeholder
+                  title="My NFT's"
+                  text="Minted NFT's will show here"
+                  icon="bookmark"
+              />
+          ) : (
+              <div>
+                <NFTPreview nfts={userNFTs} />
+
+              </div>
+          )}
+        </>
       )}
 
     </Wrapper>
