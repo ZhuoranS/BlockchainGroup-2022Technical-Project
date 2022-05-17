@@ -12,7 +12,10 @@ import Posts from '../abis/Posts.json';
 
 import Web3 from 'web3';
 
+let provider = window.ethereum;
+
 let selectedUser;
+let userNFTs;
 
 let isUserInitialized = false;
 let isContractInitialized = false;
@@ -60,17 +63,59 @@ export const initUser = async () => {
     isUserInitialized = true;
 
     selectedUser = await fetchData();
-    console.log(selectedUser)
+    const userData = {
+        "address": selectedUser,
+        "userNFTs": await initUserNFTs(selectedUser),
+        "avatar": "https://www.w3schools.com/css/img_lights.jpg",
+        "isMe": true,
+        "username": "USERNAME",
+    }
+    localStorage.setItem("user", JSON.stringify(userData))
+   
+    return userData
+}
 
-       
-    return selectedUser
+export const initUserNFTs = async (user) => {
+    const getOwnedNFTs = async (currLatestId) => {
+        let ownedNFTs = [];
+        console.log(currLatestId)
+
+        for (var i = 1; i <= currLatestId; i++) {
+            let tokenURI = await getTokenURI(i)
+            
+            if ((await ownerOf(i)) == user) {
+                ownedNFTs.push(
+                    {
+                    "tokenId": i,
+                    "tokenInfo": (await (await fetch(tokenURI)).json())
+                    }
+                )
+            }
+        }
+
+        return ownedNFTs;
+    }
+
+    const latestId = (await getLatestId()).toNumber()
+    userNFTs = await getOwnedNFTs(latestId);
+
+    return userNFTs
+}
+
+export const initNetworkId = async () => {
+    const web3 = new Web3(provider);
+    const networkId = await web3.eth.net.getId();
+    console.log(networkId)
+
+    localStorage.setItem("networkId", JSON.stringify(networkId));
+
+    return networkId
 }
 
 export const initContracts = async () => {
-    let provider = window.ethereum;
 
     const web3 = new Web3(provider);
-    const networkId = await web3.eth.net.getId();
+    const networkId = await initNetworkId();
     console.log(networkId)
 
     NFTMarketplaceContract = new web3.eth.Contract(
@@ -102,6 +147,10 @@ export const initContracts = async () => {
 // NFT Manager Functions
 export const createToken = (tokenURI) => {
     return NFTManagerContract.methods.createToken(tokenURI).send({ from: selectedUser });
+}
+
+export const approve = (addressNFTMarketplace, tokenId) => {
+    return NFTManagerContract.methods.approve(addressNFTMarketplace, tokenId).send({ from: selectedUser });
 }
 
 export const getLatestId = async () => {

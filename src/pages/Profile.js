@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, createContext } from "react";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import PostPreview from "../components/PostPreview";
@@ -55,30 +55,6 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [deadend, setDeadend] = useState(false);
 
-  const [userNFTs, setUserNFTs] = useState([])
-  const [latestId, setLatestId] = useState(-1)
-
-  const getOwnedNFTs = async (currLatestId) => {
-    let ownedNFTs = [];
-    console.log(user.address)
-    console.log(currLatestId)
-
-    for (var i = 1; i <= currLatestId; i++) {
-      let tokenURI = await getTokenURI(i)
-      
-      if ((await ownerOf(i)) == user.address) {
-        ownedNFTs.push(
-          {
-            "tokenId": i,
-            "tokenInfo": (await (await fetch(tokenURI)).json())
-          }
-        )
-      }
-    }
-
-    return ownedNFTs;
-  }
-
   useEffect(() => {
     window.scrollTo(0, 0);
     client(`/${address}`)
@@ -88,12 +64,6 @@ const Profile = () => {
         setProfile(res.data);
       })
       .catch((err) => setDeadend(true));
-
-    getLatestId()
-      .then(async (res) => {
-        setLatestId(res.toNumber());
-        setUserNFTs(await getOwnedNFTs(res.toNumber()));
-      })
     
   }, [address]);
 
@@ -199,7 +169,6 @@ const Profile = () => {
                 <div>
                   {/* TODO: make sure to return only posts user has lent */}
                   <PostPreview posts={profile?.loanPosts} active={false}/>
-
                 </div>
             )}
           </>
@@ -226,7 +195,7 @@ const Profile = () => {
 
       {tab === "MY_NFTS" && (
         <>
-          {userNFTs.length === 0 ? (
+          {user.userNFTs.length === 0 ? (
               <Placeholder
                   title="My NFT's"
                   text="Minted NFT's will show here"
@@ -234,8 +203,7 @@ const Profile = () => {
               />
           ) : (
               <div>
-                <NFTPreview nfts={userNFTs} />
-
+                <NFTPreview nfts={user.userNFTs} />
               </div>
           )}
         </>
