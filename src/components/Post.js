@@ -8,7 +8,6 @@ export const PostWrapper = styled.div`
   width: 100%;
   border-radius: 4px;
   background: ${(props) => props.theme.white};
-  /* border: 1px solid ${(props) => props.theme.blue}; */
   display: flex;
   justify-content: space-between;
   flex-direction: column;

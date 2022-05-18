@@ -6,16 +6,7 @@ export const NFTWrapper = styled.div`
   width: 100%;
   border-radius: 4px;
   background: ${(props) => props.theme.white};
-  border: 1px solid ${(props) => props.theme.blue};
-
-  /* display: grid;
-  grid-template-rows: 2fr 1fr 1fr;
-  grid-template-columns: auto;
-  grid-template-areas:
-    "nftImg"
-    "nftName"
-    "nftDescription"; */
-
+  
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
