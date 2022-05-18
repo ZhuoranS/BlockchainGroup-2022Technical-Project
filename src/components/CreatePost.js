@@ -8,7 +8,7 @@ import { CloseIcon, MoreIcon, CommentIcon, InboxIcon } from "./Icons";
 import {toast} from "react-toastify";
 import Button from "../styles/Button";
 import { FeedContext } from "../context/FeedContext";
-import { Select, MenuItem, InputLabel, FormControl } from "@mui/material";
+import { Select, MenuItem, InputLabel, FormControl, TextField, OutlinedInput, InputAdornment } from "@mui/material";
 
 import { approve, lockNFT } from "../utils/Web3Client";
 
@@ -32,7 +32,7 @@ export const CreatePostWrapper = styled.div`
     background: ${(props) => props.theme.white};
     margin-bottom: 1.5rem;
     border-radius: 0.5rem;
-    padding: 5rem;
+    padding: 3rem 5rem;
 
     overflow: hidden;
   }
@@ -47,6 +47,42 @@ export const CreatePostWrapper = styled.div`
   .modal-page {
     min-width: 100%;
     width: 100%;    
+  }
+
+  .input-container {
+    border: 1px solid ${(props) => props.theme.borderColor};
+    /* border-radius: 1rem; */
+    display: grid;
+    grid-template-columns: 6fr 1fr;
+    grid-template-rows: auto;
+    grid-template-areas:
+      "inputField unitsField";
+
+    width: 100%;
+    margin: 1rem;
+  }
+
+  .units-field {
+    grid-area: unitsField;
+    text-align: center;
+    padding: 1rem;
+    background-color: lightgray;
+    width: 100%;
+    border: 1px dashed blue;
+  }
+
+  input {
+    grid-area: inputField;
+    border: 1px dashed green;
+    padding: 1rem;
+    width: 100%;
+    height: 100%;
+    background: ${(props) => props.theme.bg};
+    border: none;
+    resize: none;
+    text-align: center;
+    font-size: 1rem;
+    font-family: "Fira Sans", sans-serif;
   }
   
   #create-auction-page {
@@ -172,11 +208,10 @@ const CreatePost = ({ open, onClose, post }) => {
     const [selectedNFT, setSelectedNFT] = useState(null)
 
     // stores inputs
-    const caption = useInput("");
-    const address = useInput();
-    const amount = useInput();
-    const duration = useInput();
-    const interest = useInput();    
+    const minLoanAmount = useInput("");
+    const maxInterest = useInput("");    
+    const duration = useInput("");
+    const repaymentPeriod = useInput("");
 
     // if modal is not open, return null
     if (!open) return null;
@@ -184,7 +219,7 @@ const CreatePost = ({ open, onClose, post }) => {
     // TODO: implement minting function
     const handleSubmitPost = async () => {
         // all fields must be filled
-        if (!(address.value && amount.value && duration.value && interest.value)) {
+        if (!(repaymentPeriod.value && minLoanAmount.value && duration.value && maxInterest.value)) {
             return toast.error("Please write something");
         }
 
@@ -264,7 +299,7 @@ const CreatePost = ({ open, onClose, post }) => {
                   labelId="select-label"
                   value={selectedNFT || ''}
                   label="Select NFT"
-                  onChange={handleSelectedNFTChange} 
+                  onChange={handleSelectedNFTChange}
                 >
                     {user.userNFTs.map(nft => (
                       <MenuItem value={nft}>
@@ -274,7 +309,7 @@ const CreatePost = ({ open, onClose, post }) => {
                             flexDirection: "column", 
                             alignItems: "center", 
                             justifyContent: "space-evenly", 
-                            width: "100%"
+                            width: "100%",
                           }}
                         >
                           <img style={{width: "100px"}} src={nft.tokenInfo.image}/> 
@@ -286,36 +321,69 @@ const CreatePost = ({ open, onClose, post }) => {
                 </Select>
               </FormControl>
             </div>
-            <h1>
-              <span className="caption">
-                  <textarea
-                      placeholder="Address"
-                      value={address.value}
-                      onChange={address.onChange}
-                  />
-              </span>
-              <span className="caption">
-                  <textarea
-                      placeholder="Amount"
-                      value={amount.value}
-                      onChange={amount.onChange}
-                  />
-              </span>
-              <span className="caption">
-                  <textarea
-                      placeholder="Duration"
-                      value={duration.value}
-                      onChange={duration.onChange}
-                  />
-              </span>
-              <span className="caption">
-                  <textarea
-                      placeholder="Interest"
-                      value={interest.value}
-                      onChange={interest.onChange}
-                  />
-              </span>
-            </h1>
+
+            <OutlinedInput
+              id="loan-input-label"
+              endAdornment={<InputAdornment position="end">ETH</InputAdornment>}
+              aria-describedby="outlined-weight-helper-text"
+              inputProps={{
+                'aria-label': 'weight',
+                min: "0.01",
+                step: "0.01"
+              }}
+              type="number"
+              placeholder="Min Loan Amount"
+              style={{width: "100%", margin: "1rem 0"}}
+              value={minLoanAmount.value}
+              onChange={minLoanAmount.onChange}
+            />
+
+            <OutlinedInput
+              id="loan-input-label"
+              endAdornment={<InputAdornment position="end">Mos</InputAdornment>}
+              aria-describedby="outlined-weight-helper-text"
+              inputProps={{
+                'aria-label': 'weight',
+                min: "1"
+              }}
+              type="number"
+              placeholder="Loan Duration"
+              style={{width: "100%", margin: "1rem 0"}}
+              value={duration.value}
+              onChange={duration.onChange}
+            />
+
+            <OutlinedInput
+              id="loan-input-label"
+              endAdornment={<InputAdornment position="end">&#8199;%&#8199;&#8199;</InputAdornment>}
+              aria-describedby="outlined-weight-helper-text"
+              inputProps={{
+                'aria-label': 'weight',
+                min: "0",
+                step: "0.25"
+              }}
+              type="number"
+              placeholder="Interest Rate"
+              style={{width: "100%", margin: "1rem 0"}}
+              value={maxInterest.value}
+              onChange={maxInterest.onChange}
+            />
+
+            <OutlinedInput
+              id="loan-input-label"
+              endAdornment={<InputAdornment position="end">Mos</InputAdornment>}
+              aria-describedby="outlined-weight-helper-text"
+              inputProps={{
+                'aria-label': 'weight',
+                min: "1",
+                step: "1"
+              }}
+              type="number"
+              placeholder="Min Repayment Period"
+              style={{width: "100%", margin: "1rem 0"}}
+              value={repaymentPeriod.value}
+              onChange={repaymentPeriod.onChange}
+            />
 
             <ul>
                 <li>
@@ -344,10 +412,13 @@ const CreatePost = ({ open, onClose, post }) => {
             {/* TODO: FINISH PAGE (Can create component elsewhere and import here) */}
             <h1><strong>REVIEW</strong></h1>
             <h3>Make sure you have filled in all fields accurately</h3>
-            <p>Address: {address.value ? address.value : "EMPTY"}</p>
-            <p>Amount: {amount.value ? amount.value : "EMPTY"}</p>
-            <p>Duration: {duration.value ? duration.value : "EMPTY"}</p>
-            <p>Interest: {interest.value ? interest.value : "EMPTY"}</p>
+            <div className="review-elements">
+              <p>NFT: {selectedNFT ? <img src={selectedNFT.tokenInfo.image}></img> : "EMPTY"}</p>
+              <p>Amount: {minLoanAmount.value ? minLoanAmount.value : "EMPTY"}</p>
+              <p>Duration: {duration.value ? duration.value : "EMPTY"}</p>
+              <p>Interest: {maxInterest.value ? maxInterest.value : "EMPTY"}</p>
+              <p>Repayment Period: {repaymentPeriod.value ? repaymentPeriod.value : "EMPTY"}</p>
+            </div>
 
             <ul>
                 <li>
