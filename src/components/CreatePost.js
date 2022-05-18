@@ -8,6 +8,14 @@ import { CloseIcon, MoreIcon, CommentIcon, InboxIcon } from "./Icons";
 import {toast} from "react-toastify";
 import Button from "../styles/Button";
 import { FeedContext } from "../context/FeedContext";
+import { Select, MenuItem, InputLabel, FormControl } from "@mui/material";
+
+import { approve, lockNFT } from "../utils/Web3Client";
+
+// to retrieve contract addresses
+import NFTManager from '../abis/NFTManager.json';
+import NFTMarketplace from '../abis/NFTMarketplace.json';
+import { UserContext } from "../context/UserContext";
 
 export const CreatePostWrapper = styled.div`
   /* width: 100%; */
@@ -108,6 +116,17 @@ export const CreatePostWrapper = styled.div`
     resize: none;
   }
 
+  .dropdown {
+    width: 100%;
+    margin: 1rem;
+  }
+
+  .dropdown-items {
+    display: flex;
+    flex-direction: row;
+    border: 2px dashed blue;
+  }
+
   @media screen and (max-width: 950px) {
     width: 100%;
     .post-img {
@@ -145,11 +164,12 @@ export const Carousel = ({ children, activeModalPage }) => {
 const CreatePost = ({ open, onClose, post }) => {
 
     const history = useHistory();
+    const { feed, setFeed } = useContext(FeedContext);
+    const {user} = useContext(UserContext)
 
     const [postImage, setPostImage] = useState("");
     const [activeModalPage, setActiveModalPage] = useState(0); // current page number on modal carousel
-
-    const { feed, setFeed } = useContext(FeedContext);
+    const [selectedNFT, setSelectedNFT] = useState(null)
 
     // stores inputs
     const caption = useInput("");
@@ -162,11 +182,23 @@ const CreatePost = ({ open, onClose, post }) => {
     if (!open) return null;
 
     // TODO: implement minting function
-    const handleSubmitPost = () => {
+    const handleSubmitPost = async () => {
         // all fields must be filled
         if (!(address.value && amount.value && duration.value && interest.value)) {
             return toast.error("Please write something");
         }
+
+        if (!selectedNFT) {
+          return toast.error("Please choose an NFT");
+        }
+
+        const networkId = localStorage.getItem("networkId")
+
+        const addressNFTManager = NFTManager.networks[networkId].address;
+        const addressNFTMarketplace = NFTMarketplace.networks[networkId].address;
+
+        await approve(addressNFTMarketplace, selectedNFT.tokenId)
+        await lockNFT(addressNFTManager, selectedNFT.tokenId)
 
         toast.success("Your post has been submitted successfully");
 
@@ -208,6 +240,11 @@ const CreatePost = ({ open, onClose, post }) => {
       setActiveModalPage(activeModalPage - 2)
     }
 
+    const handleSelectedNFTChange = (e) => {
+      console.log(e)
+      setSelectedNFT(e.target.value)
+    }
+
     return (
       <CreatePostWrapper>
         {/* Blur rest of screen */}
@@ -219,6 +256,35 @@ const CreatePost = ({ open, onClose, post }) => {
           <div className="modal-page" id="create-auction-page">
             <div className="header">                
               <div><span>CREATE AUCTION</span></div>
+            </div>
+            <div className="dropdown">
+              <FormControl fullWidth>
+                <InputLabel id="select-label">Select NFT</InputLabel>
+                <Select 
+                  labelId="select-label"
+                  value={selectedNFT || ''}
+                  label="Select NFT"
+                  onChange={handleSelectedNFTChange} 
+                >
+                    {user.userNFTs.map(nft => (
+                      <MenuItem value={nft}>
+                        <div 
+                          style={{
+                            display: "flex", 
+                            flexDirection: "column", 
+                            alignItems: "center", 
+                            justifyContent: "space-evenly", 
+                            width: "100%"
+                          }}
+                        >
+                          <img style={{width: "100px"}} src={nft.tokenInfo.image}/> 
+                          <strong>{nft.tokenInfo.name}</strong>
+
+                        </div> 
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
             </div>
             <h1>
               <span className="caption">
@@ -276,7 +342,7 @@ const CreatePost = ({ open, onClose, post }) => {
           <div className="modal-page" id="summary-page">
 
             {/* TODO: FINISH PAGE (Can create component elsewhere and import here) */}
-            <h1>REVIEW</h1>
+            <h1><strong>REVIEW</strong></h1>
             <h3>Make sure you have filled in all fields accurately</h3>
             <p>Address: {address.value ? address.value : "EMPTY"}</p>
             <p>Amount: {amount.value ? amount.value : "EMPTY"}</p>
