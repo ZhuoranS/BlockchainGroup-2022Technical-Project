@@ -124,7 +124,7 @@ const CreateNFT = ({open, onClose}) => {
     const handleSubmitPost = async () => {
         // all fields must be filled
         if (!imageURI.value) {
-            return toast.error("Please write something");
+            return toast.error("Please enter in the Image URI");
         }
 
         await createToken(imageURI.value);

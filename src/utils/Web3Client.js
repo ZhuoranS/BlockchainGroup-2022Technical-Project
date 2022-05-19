@@ -180,21 +180,21 @@ export const lockNFT = (addressNFTManager, tokenId) => {
 }
 
 // Blind Auction Functions
-export const startAuction = (minLoanAmount, maxInterestRate, minRepaymentPeriod, auctionDuration, NFTContractAddress, tokenId) => {
+export const startAuction = (minLoanAmount, maxInterestRate, minRepaymentPeriod, auctionDuration, addressNFTManager, tokenId) => {
     BlindAuctionContract.methods.startAuction(
-        minLoanAmount, maxInterestRate, minRepaymentPeriod, NFTContractAddress, tokenId, auctionDuration
+        minLoanAmount, maxInterestRate, minRepaymentPeriod, addressNFTManager, tokenId, auctionDuration
     ).send({ from: selectedUser });
 }
 
-export const makeBid = (loanAmount, interestRate, repaymentPeriod, isFake, NFTContractAddress, tokenId) => {
+export const makeBid = (loanAmount, interestRate, repaymentPeriod, isFake, addressNFTManager, tokenId) => {
     BlindAuctionContract.methods.makeBid(
-        loanAmount, interestRate, repaymentPeriod, isFake, NFTContractAddress, NFTContractAddress, tokenId
+        loanAmount, interestRate, repaymentPeriod, isFake, addressNFTManager, tokenId
     ).send({ from: selectedUser });
 }
 
-export const selectWinningBid = (selectedLender, bidId, NFTContractAddress, tokenId, LoanContractAddress) => {
+export const selectWinningBid = (selectedLender, bidId, addressNFTManager, tokenId, LoanContractAddress) => {
     BlindAuctionContract.methods.selectBid(
-        selectedLender, bidId, NFTContractAddress, tokenId, LoanContractAddress
+        selectedLender, bidId, addressNFTManager, tokenId, LoanContractAddress
     ).send({ from: selectedUser });
 }
 

@@ -11,6 +11,7 @@ import { FeedContext } from "../context/FeedContext";
 import { Select, MenuItem, InputLabel, FormControl, TextField, OutlinedInput, InputAdornment } from "@mui/material";
 
 import { approve, lockNFT } from "../utils/Web3Client";
+import { startAuction } from "../utils/Web3Client";
 
 // to retrieve contract addresses
 import NFTManager from '../abis/NFTManager.json';
@@ -215,15 +216,14 @@ const CreatePost = ({ open, onClose, post }) => {
     const minLoanAmount = useInput("");
     const maxInterest = useInput("");    
     const duration = useInput("");
-    const repaymentPeriod = useInput("");
+    const minRepaymentPeriod = useInput("");
 
     // if modal is not open, return null
     if (!open) return null;
 
-    // TODO: implement minting function
     const handleSubmitPost = async () => {
         // all fields must be filled
-        if (!(repaymentPeriod.value && minLoanAmount.value && duration.value && maxInterest.value)) {
+        if (!(minLoanAmount.value && duration.value && maxInterest.value && minRepaymentPeriod.value)) {
             return toast.error("Please fill in all fields");
         }
 
@@ -238,36 +238,9 @@ const CreatePost = ({ open, onClose, post }) => {
 
         await approve(addressNFTMarketplace, selectedNFT.tokenId)
         await lockNFT(addressNFTManager, selectedNFT.tokenId)
+        await startAuction(minLoanAmount.value, maxInterest.value, minRepaymentPeriod.value, duration.value, addressNFTManager, selectedNFT.tokenId)
 
         toast.success("Your post has been submitted successfully");
-
-        // OLD CODE -- commented out b/c the pseudo API call might be useful later
-        /*const tags = caption.value
-            .split(" ")
-            .filter((caption) => caption.startsWith("#"));
-
-        const cleanedCaption = caption.value
-            .split(" ")
-            .filter((caption) => !caption.startsWith("#"))
-            .join(" ");
-
-        caption.setValue("");
-
-        const newPost = {
-            caption: cleanedCaption,
-            files: [postImage],
-            tags,
-        };
-
-        client(`/posts`, { body: newPost }).then((res) => {
-            const post = res.data;
-            post.isLiked = false;
-            post.isSaved = false;
-            post.isMine = true;
-            setFeed([post, ...feed]);
-            window.scrollTo(0, 0);
-            toast.success("Your post has been submitted successfully");
-        });*/
     };
 
     // handle carousel sliding
@@ -328,7 +301,7 @@ const CreatePost = ({ open, onClose, post }) => {
 
             <OutlinedInput
               id="loan-input-label"
-              endAdornment={<InputAdornment position="end">ETH</InputAdornment>}
+              endAdornment={<InputAdornment position="end"><strong style={{width: "40px", textAlign: "center"}}>ETH</strong></InputAdornment>}
               aria-describedby="outlined-weight-helper-text"
               inputProps={{
                 'aria-label': 'weight',
@@ -344,7 +317,7 @@ const CreatePost = ({ open, onClose, post }) => {
 
             <OutlinedInput
               id="loan-input-label"
-              endAdornment={<InputAdornment position="end">Mos</InputAdornment>}
+              endAdornment={<InputAdornment position="end"><strong style={{width: "40px", textAlign: "center"}}>Hrs</strong></InputAdornment>}
               aria-describedby="outlined-weight-helper-text"
               inputProps={{
                 'aria-label': 'weight',
@@ -359,7 +332,7 @@ const CreatePost = ({ open, onClose, post }) => {
 
             <OutlinedInput
               id="loan-input-label"
-              endAdornment={<InputAdornment position="end">&#8199;%&#8199;&#8199;</InputAdornment>}
+              endAdornment={<InputAdornment position="end"><strong style={{width: "40px", textAlign: "center"}}>%</strong></InputAdornment>}
               aria-describedby="outlined-weight-helper-text"
               inputProps={{
                 'aria-label': 'weight',
@@ -375,7 +348,7 @@ const CreatePost = ({ open, onClose, post }) => {
 
             <OutlinedInput
               id="loan-input-label"
-              endAdornment={<InputAdornment position="end">Mos</InputAdornment>}
+              endAdornment={<InputAdornment position="end"><strong style={{width: "40px", textAlign: "center"}}>Days</strong></InputAdornment>}
               aria-describedby="outlined-weight-helper-text"
               inputProps={{
                 'aria-label': 'weight',
@@ -385,8 +358,8 @@ const CreatePost = ({ open, onClose, post }) => {
               type="number"
               placeholder="Min Repayment Period"
               style={{width: "100%", margin: "1rem 0"}}
-              value={repaymentPeriod.value}
-              onChange={repaymentPeriod.onChange}
+              value={minRepaymentPeriod.value}
+              onChange={minRepaymentPeriod.onChange}
             />
 
             <ul>
@@ -417,11 +390,11 @@ const CreatePost = ({ open, onClose, post }) => {
             <h1><strong>REVIEW</strong></h1>
             <h3>Make sure you have filled in all fields accurately</h3>
             <div className="review-elements">
-              <p>NFT: {selectedNFT ? <img src={selectedNFT.tokenInfo.image}></img> : "EMPTY"}</p>
-              <p>Amount: {minLoanAmount.value ? minLoanAmount.value : "EMPTY"}</p>
-              <p>Duration: {duration.value ? duration.value : "EMPTY"}</p>
-              <p>Interest: {maxInterest.value ? maxInterest.value : "EMPTY"}</p>
-              <p>Repayment Period: {repaymentPeriod.value ? repaymentPeriod.value : "EMPTY"}</p>
+              <p>NFT: {selectedNFT ? <img style={{width: "150px"}} src={selectedNFT.tokenInfo.image}></img> : "EMPTY"}</p>
+              <p>Amount: {minLoanAmount.value ? minLoanAmount.value + " ETH": "EMPTY"}</p>
+              <p>Duration: {duration.value ? duration.value + " Mos": "EMPTY"}</p>
+              <p>Interest: {maxInterest.value ? maxInterest.value + " %": "EMPTY"}</p>
+              <p>Repayment Period: {minRepaymentPeriod.value ? minRepaymentPeriod.value + " Mos": "EMPTY"}</p>
             </div>
 
             <ul>
