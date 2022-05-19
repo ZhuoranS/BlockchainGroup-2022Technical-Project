@@ -35,6 +35,10 @@ export const CreatePostWrapper = styled.div`
     padding: 3rem 5rem;
 
     overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
   
   .modal {
@@ -46,7 +50,7 @@ export const CreatePostWrapper = styled.div`
   
   .modal-page {
     min-width: 100%;
-    width: 100%;    
+    width: 100%;   
   }
 
   .input-container {
@@ -220,7 +224,7 @@ const CreatePost = ({ open, onClose, post }) => {
     const handleSubmitPost = async () => {
         // all fields must be filled
         if (!(repaymentPeriod.value && minLoanAmount.value && duration.value && maxInterest.value)) {
-            return toast.error("Please write something");
+            return toast.error("Please fill in all fields");
         }
 
         if (!selectedNFT) {
