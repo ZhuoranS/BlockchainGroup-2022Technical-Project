@@ -128,6 +128,8 @@ const CreateNFT = ({open, onClose}) => {
         }
 
         await createToken(imageURI.value);
+        imageURI.value = ""
+        onClose();
 
         toast.success("Your post has been submitted successfully");
     }

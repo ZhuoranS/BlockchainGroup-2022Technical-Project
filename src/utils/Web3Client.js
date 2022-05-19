@@ -26,11 +26,14 @@ let BlindAuctionContract;
 let P2PLoanContract;
 
 export const initUser = async () => {
-
-    const loadWeb3 = async () => {
+    const loadWeb3 = async () => { 
         if (window.ethereum) {
             window.web3 = new Web3(window.ethereum)
-            await window.ethereum.enable()
+            await window.ethereum.request({ method: 'eth_requestAccounts'})
+
+            window.ethereum.on('accountsChanged', (accounts) => {
+                console.log(accounts)
+            })
         }
         else if (window.web3) {
             window.web3 = new Web3(window.web3.currentProvider)
@@ -61,6 +64,26 @@ export const initUser = async () => {
     }
 
     isUserInitialized = true;
+    // https://ipfs.io/ipfs/QmUFbUjAifv9GwJo7ufTB5sccnrNqELhDMafoEmZdPPng7
+    // https://ipfs.io/ipfs/Qmd9MCGtdVz2miNumBHDbvj8bigSgTwnr4SbyH6DNnpWdt?filename=1-PUG.json
+
+    fetch('https://ipfs.io/ipfs/QmUFbUjAifv9GwJo7ufTB5sccnrNqELhDMafoEmZdPPng7', {
+        method: "GET",
+    })
+        .then(async res => {
+            console.log(res)
+            console.log((await res.text()).replaceAll('\r', ''))
+        })
+        .then(data => console.log(data))
+
+    fetch('https://ipfs.io/ipfs/Qmd9MCGtdVz2miNumBHDbvj8bigSgTwnr4SbyH6DNnpWdt?filename=1-PUG.json', {
+        method: "GET",
+    })
+        .then(async res => {
+            console.log(res)
+            console.log((await res.text()).replaceAll('\r', ''))
+        })
+        .then(data => console.log(data))
 
     selectedUser = await fetchData();
     const userData = {
@@ -70,6 +93,7 @@ export const initUser = async () => {
         "isMe": true,
         "username": "USERNAME",
     }
+    console.log("HELLO")
     localStorage.setItem("user", JSON.stringify(userData))
    
     return userData
@@ -78,18 +102,26 @@ export const initUser = async () => {
 export const initUserNFTs = async (user) => {
     const getOwnedNFTs = async (currLatestId) => {
         let ownedNFTs = [];
-        console.log(currLatestId)
+        let regex = /\,(?!\s*?[\{\[\"\'\w])/g;
 
         for (var i = 1; i <= currLatestId; i++) {
             let tokenURI = await getTokenURI(i)
+            console.log(tokenURI)
             
             if ((await ownerOf(i)) == user) {
-                ownedNFTs.push(
-                    {
-                    "tokenId": i,
-                    "tokenInfo": (await (await fetch(tokenURI)).json())
-                    }
-                )
+                try {
+                    let tokenInfo = ((await (await fetch(tokenURI)).text()).replace(regex, ''));
+                    console.log(JSON.parse(tokenInfo))
+
+                    ownedNFTs.push(
+                        {
+                        "tokenId": i,
+                        "tokenInfo": JSON.parse(tokenInfo)
+                        }
+                    )
+                } catch {
+                    continue;
+                }
             }
         }
 
@@ -98,6 +130,7 @@ export const initUserNFTs = async (user) => {
 
     const latestId = (await getLatestId()).toNumber()
     userNFTs = await getOwnedNFTs(latestId);
+    console.log(userNFTs)
 
     return userNFTs
 }
@@ -105,7 +138,6 @@ export const initUserNFTs = async (user) => {
 export const initNetworkId = async () => {
     const web3 = new Web3(provider);
     const networkId = await web3.eth.net.getId();
-    console.log(networkId)
 
     localStorage.setItem("networkId", JSON.stringify(networkId));
 
@@ -116,7 +148,6 @@ export const initContracts = async () => {
 
     const web3 = new Web3(provider);
     const networkId = await initNetworkId();
-    console.log(networkId)
 
     NFTMarketplaceContract = new web3.eth.Contract(
         NFTMarketplace.abi, 
@@ -137,9 +168,6 @@ export const initContracts = async () => {
         P2PLoan.abi,
         P2PLoan.networks[networkId].address
     )
-
-    console.log(NFTManager)
-    console.log(NFTManagerContract)
 
     isContractInitialized = true;
 }
