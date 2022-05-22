@@ -220,6 +220,9 @@ const CreatePost = ({ open, onClose, post }) => {
 
     // if modal is not open, return null
     if (!open) return null;
+    console.log(NFTManager.networks[5777].address)
+    console.log(NFTMarketplace.networks[5777].address)
+
 
     const handleSubmitPost = async () => {
         // all fields must be filled
@@ -236,9 +239,22 @@ const CreatePost = ({ open, onClose, post }) => {
         const addressNFTManager = NFTManager.networks[networkId].address;
         const addressNFTMarketplace = NFTMarketplace.networks[networkId].address;
 
-        await approve(addressNFTMarketplace, selectedNFT.tokenId)
-        await lockNFT(addressNFTManager, selectedNFT.tokenId)
-        await startAuction(minLoanAmount.value, maxInterest.value, minRepaymentPeriod.value, duration.value, addressNFTManager, selectedNFT.tokenId)
+        console.log(addressNFTManager)
+        console.log(addressNFTMarketplace)
+        console.log("BEFORE METHODS")
+        approve(addressNFTMarketplace, selectedNFT.tokenId)
+        console.log("APPROVE")
+        lockNFT(addressNFTManager, selectedNFT.tokenId)
+        console.log("LOCK")
+        startAuction(minLoanAmount.value, maxInterest.value, minRepaymentPeriod.value, duration.value, addressNFTManager, selectedNFT.tokenId)
+        console.log("START AUCTION")
+
+        minLoanAmount.value = ""
+        duration.value = ""
+        maxInterest.value = ""
+        minRepaymentPeriod.value = ""
+        setSelectedNFT(null)
+        onClose();
 
         toast.success("Your post has been submitted successfully");
     };
@@ -392,9 +408,9 @@ const CreatePost = ({ open, onClose, post }) => {
             <div className="review-elements">
               <p>NFT: {selectedNFT ? <img style={{width: "150px"}} src={selectedNFT.tokenInfo.image}></img> : "EMPTY"}</p>
               <p>Amount: {minLoanAmount.value ? minLoanAmount.value + " ETH": "EMPTY"}</p>
-              <p>Duration: {duration.value ? duration.value + " Mos": "EMPTY"}</p>
+              <p>Duration: {duration.value ? duration.value + " Hrs": "EMPTY"}</p>
               <p>Interest: {maxInterest.value ? maxInterest.value + " %": "EMPTY"}</p>
-              <p>Repayment Period: {minRepaymentPeriod.value ? minRepaymentPeriod.value + " Mos": "EMPTY"}</p>
+              <p>Repayment Period: {minRepaymentPeriod.value ? minRepaymentPeriod.value + " Days": "EMPTY"}</p>
             </div>
 
             <ul>

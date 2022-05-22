@@ -127,7 +127,7 @@ const CreateNFT = ({open, onClose}) => {
             return toast.error("Please enter in the Image URI");
         }
 
-        await createToken(imageURI.value);
+        createToken(imageURI.value);
         imageURI.value = ""
         onClose();
 

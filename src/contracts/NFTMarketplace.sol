@@ -12,10 +12,12 @@ contract NFTMarketplace is IERC721Receiver {
     struct NFT {
         address nft_contract;
         uint256 token_id;
+        address sender;
     }
 
     //original owner -->  nft(contract address, token_id)
-    mapping(address => NFT) public NFT_list;
+    // mapping(address => NFT) public NFT_list;
+    NFT [] NFT_list;
 
     //check if the address is a contract address
     function isContract(address _addr) public view returns (bool) {
@@ -50,7 +52,9 @@ contract NFTMarketplace is IERC721Receiver {
         // Lock NFT in Marketplace contract
         nftManager.transferNFTFrom(msg.sender, address(this), _token_id);
         // add to the master list
-        NFT_list[msg.sender] = NFT(_addressNFTManager,_token_id);
+        // NFT_list[msg.sender] = NFT(_addressNFTManager,_token_id);
+        NFT_list.push(NFT(_addressNFTManager, _token_id, msg.sender));
+
         return true;
     }
 

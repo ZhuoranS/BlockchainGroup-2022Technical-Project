@@ -64,26 +64,6 @@ export const initUser = async () => {
     }
 
     isUserInitialized = true;
-    // https://ipfs.io/ipfs/QmUFbUjAifv9GwJo7ufTB5sccnrNqELhDMafoEmZdPPng7
-    // https://ipfs.io/ipfs/Qmd9MCGtdVz2miNumBHDbvj8bigSgTwnr4SbyH6DNnpWdt?filename=1-PUG.json
-
-    fetch('https://ipfs.io/ipfs/QmUFbUjAifv9GwJo7ufTB5sccnrNqELhDMafoEmZdPPng7', {
-        method: "GET",
-    })
-        .then(async res => {
-            console.log(res)
-            console.log((await res.text()).replaceAll('\r', ''))
-        })
-        .then(data => console.log(data))
-
-    fetch('https://ipfs.io/ipfs/Qmd9MCGtdVz2miNumBHDbvj8bigSgTwnr4SbyH6DNnpWdt?filename=1-PUG.json', {
-        method: "GET",
-    })
-        .then(async res => {
-            console.log(res)
-            console.log((await res.text()).replaceAll('\r', ''))
-        })
-        .then(data => console.log(data))
 
     selectedUser = await fetchData();
     const userData = {
@@ -93,7 +73,7 @@ export const initUser = async () => {
         "isMe": true,
         "username": "USERNAME",
     }
-    console.log("HELLO")
+
     localStorage.setItem("user", JSON.stringify(userData))
    
     return userData
@@ -106,12 +86,10 @@ export const initUserNFTs = async (user) => {
 
         for (var i = 1; i <= currLatestId; i++) {
             let tokenURI = await getTokenURI(i)
-            console.log(tokenURI)
             
             if ((await ownerOf(i)) == user) {
                 try {
                     let tokenInfo = ((await (await fetch(tokenURI)).text()).replace(regex, ''));
-                    console.log(JSON.parse(tokenInfo))
 
                     ownedNFTs.push(
                         {
@@ -130,7 +108,6 @@ export const initUserNFTs = async (user) => {
 
     const latestId = (await getLatestId()).toNumber()
     userNFTs = await getOwnedNFTs(latestId);
-    console.log(userNFTs)
 
     return userNFTs
 }
