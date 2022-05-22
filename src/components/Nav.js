@@ -9,7 +9,9 @@ import Button from "../styles/Button";
 import {client} from "../utils";
 import CreatePost from "./CreatePost";
 import CreateNFT from "./CreateNFT";
-import {post1} from "../utils/FakeBackend";
+import {post1, user2} from "../utils/FakeBackend";
+
+import { initUser } from "../utils/Web3Client";
 
 import {user1} from "../utils/FakeBackend";
 import Web3 from "web3";
@@ -68,6 +70,8 @@ const Nav = () => {
     const [ nftModalOpen, setNftModalOpen ] = useState(false)
     const { ethereum } = window
 
+    console.log(user)
+
     const handleDisconnect = () => {
         setUser(null);
         localStorage.removeItem("user");
@@ -80,11 +84,12 @@ const Nav = () => {
                 method: 'eth_requestAccounts',
             })
             if (typeof accounts[0] === 'string' && accounts[0] !== '') {
-                client("/auth/me").then((res) => {
-                    setUser(res.data);
-                    localStorage.setItem("user", JSON.stringify(res.data));
-                    toast.success(`login success ${accounts[0]}`);
-                });
+                // client("/auth/me").then((res) => {
+                //     setUser(res.data);
+                //     localStorage.setItem("user", JSON.stringify(res.data));
+                //     toast.success(`login success ${accounts[0]}`);
+                // });
+                setUser(await initUser());
             }
         } catch (error) {
             console.error(error)

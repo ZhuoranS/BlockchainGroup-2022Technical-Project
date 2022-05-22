@@ -11,6 +11,7 @@ import { CloseIcon, MoreIcon, CommentIcon, InboxIcon } from "../components/Icons
 import {toast} from "react-toastify";
 import Bid from "../components/Bid"
 import { UserContext } from "../context/UserContext";
+import Button from "../styles/Button";
 
 const Wrapper = styled.div`
   display: grid;
@@ -304,8 +305,9 @@ const DetailedPost = () => {
                   />
                   <span className="units-field">%</span>
                 </div>
-                <button onClick={handleAddBid}>Place Bid</button></>
-              }
+                <Button onClick={handleAddBid} secondary>Place Bid</Button>
+              </>
+            }
           </div>
         </div>
 

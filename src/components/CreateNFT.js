@@ -33,7 +33,7 @@ export const CreateNFTWrapper = styled.div`
     background: ${(props) => props.theme.white};
     margin-bottom: 1.5rem;
     border-radius: 0.5rem;
-    padding: 5rem;
+    padding: 3rem 5rem;
 
     overflow: hidden;
   }
@@ -116,19 +116,20 @@ export const CreateNFTWrapper = styled.div`
 const CreateNFT = ({open, onClose}) => {
 
     // stores inputs
-    const imageURI = useInput("");
-    const description = useInput("");   
+    const imageURI = useInput(""); 
 
     // if modal is not open, return null
     if (!open) return null;
 
     const handleSubmitPost = async () => {
         // all fields must be filled
-        if (!(imageURI.value && description.value )) {
-            return toast.error("Please write something");
+        if (!imageURI.value) {
+            return toast.error("Please enter in the Image URI");
         }
 
-        await createToken(imageURI.value);
+        createToken(imageURI.value);
+        imageURI.value = ""
+        onClose();
 
         toast.success("Your post has been submitted successfully");
     }
@@ -149,13 +150,6 @@ const CreateNFT = ({open, onClose}) => {
                         placeholder="Image URI"
                         value={imageURI.value}
                         onChange={imageURI.onChange}
-                    />
-                </span>
-                <span className="caption">
-                    <textarea
-                        placeholder="Description"
-                        value={description.value}
-                        onChange={description.onChange}
                     />
                 </span>
             </h1>

@@ -12,7 +12,10 @@ import Posts from '../abis/Posts.json';
 
 import Web3 from 'web3';
 
+let provider = window.ethereum;
+
 let selectedUser;
+let userNFTs;
 
 let isUserInitialized = false;
 let isContractInitialized = false;
@@ -23,11 +26,14 @@ let BlindAuctionContract;
 let P2PLoanContract;
 
 export const initUser = async () => {
-
-    const loadWeb3 = async () => {
+    const loadWeb3 = async () => { 
         if (window.ethereum) {
             window.web3 = new Web3(window.ethereum)
-            await window.ethereum.enable()
+            await window.ethereum.request({ method: 'eth_requestAccounts'})
+
+            window.ethereum.on('accountsChanged', (accounts) => {
+                console.log(accounts)
+            })
         }
         else if (window.web3) {
             window.web3 = new Web3(window.web3.currentProvider)
@@ -60,18 +66,65 @@ export const initUser = async () => {
     isUserInitialized = true;
 
     selectedUser = await fetchData();
-    console.log(selectedUser)
+    const userData = {
+        "address": selectedUser,
+        "userNFTs": await initUserNFTs(selectedUser),
+        "avatar": "https://www.w3schools.com/css/img_lights.jpg",
+        "isMe": true,
+        "username": "USERNAME",
+    }
 
-       
-    return selectedUser
+    localStorage.setItem("user", JSON.stringify(userData))
+   
+    return userData
+}
+
+export const initUserNFTs = async (user) => {
+    const getOwnedNFTs = async (currLatestId) => {
+        let ownedNFTs = [];
+        let regex = /\,(?!\s*?[\{\[\"\'\w])/g;
+
+        for (var i = 1; i <= currLatestId; i++) {
+            let tokenURI = await getTokenURI(i)
+            
+            if ((await ownerOf(i)) == user) {
+                try {
+                    let tokenInfo = ((await (await fetch(tokenURI)).text()).replace(regex, ''));
+
+                    ownedNFTs.push(
+                        {
+                        "tokenId": i,
+                        "tokenInfo": JSON.parse(tokenInfo)
+                        }
+                    )
+                } catch {
+                    continue;
+                }
+            }
+        }
+
+        return ownedNFTs;
+    }
+
+    const latestId = (await getLatestId()).toNumber()
+    userNFTs = await getOwnedNFTs(latestId);
+
+    return userNFTs
+}
+
+export const initNetworkId = async () => {
+    const web3 = new Web3(provider);
+    const networkId = await web3.eth.net.getId();
+
+    localStorage.setItem("networkId", JSON.stringify(networkId));
+
+    return networkId
 }
 
 export const initContracts = async () => {
-    let provider = window.ethereum;
 
     const web3 = new Web3(provider);
-    const networkId = await web3.eth.net.getId();
-    console.log(networkId)
+    const networkId = await initNetworkId();
 
     NFTMarketplaceContract = new web3.eth.Contract(
         NFTMarketplace.abi, 
@@ -93,15 +146,16 @@ export const initContracts = async () => {
         P2PLoan.networks[networkId].address
     )
 
-    console.log(NFTManager)
-    console.log(NFTManagerContract)
-
     isContractInitialized = true;
 }
 
 // NFT Manager Functions
 export const createToken = (tokenURI) => {
     return NFTManagerContract.methods.createToken(tokenURI).send({ from: selectedUser });
+}
+
+export const approve = (addressNFTMarketplace, tokenId) => {
+    return NFTManagerContract.methods.approve(addressNFTMarketplace, tokenId).send({ from: selectedUser });
 }
 
 export const getLatestId = async () => {
@@ -131,21 +185,21 @@ export const lockNFT = (addressNFTManager, tokenId) => {
 }
 
 // Blind Auction Functions
-export const startAuction = (minLoanAmount, maxInterestRate, minRepaymentPeriod, auctionDuration, NFTContractAddress, tokenId) => {
+export const startAuction = (minLoanAmount, maxInterestRate, minRepaymentPeriod, auctionDuration, addressNFTManager, tokenId) => {
     BlindAuctionContract.methods.startAuction(
-        minLoanAmount, maxInterestRate, minRepaymentPeriod, NFTContractAddress, tokenId, auctionDuration
+        minLoanAmount, maxInterestRate, minRepaymentPeriod, addressNFTManager, tokenId, auctionDuration
     ).send({ from: selectedUser });
 }
 
-export const makeBid = (loanAmount, interestRate, repaymentPeriod, isFake, NFTContractAddress, tokenId) => {
+export const makeBid = (loanAmount, interestRate, repaymentPeriod, isFake, addressNFTManager, tokenId) => {
     BlindAuctionContract.methods.makeBid(
-        loanAmount, interestRate, repaymentPeriod, isFake, NFTContractAddress, NFTContractAddress, tokenId
+        loanAmount, interestRate, repaymentPeriod, isFake, addressNFTManager, tokenId
     ).send({ from: selectedUser });
 }
 
-export const selectWinningBid = (selectedLender, bidId, NFTContractAddress, tokenId, LoanContractAddress) => {
+export const selectWinningBid = (selectedLender, bidId, addressNFTManager, tokenId, LoanContractAddress) => {
     BlindAuctionContract.methods.selectBid(
-        selectedLender, bidId, NFTContractAddress, tokenId, LoanContractAddress
+        selectedLender, bidId, addressNFTManager, tokenId, LoanContractAddress
     ).send({ from: selectedUser });
 }
 

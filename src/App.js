@@ -1,12 +1,12 @@
-import React, {useContext, useEffect, useState} from "react";
-import {toast, ToastContainer} from "react-toastify";
+import React, { useContext, useEffect, useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {ThemeProvider as StyledThemeProvider} from "styled-components";
+import { ThemeProvider as StyledThemeProvider } from "styled-components";
 import GlobalStyle from "./styles/GlobalStyle";
 import Routing from "./Routing";
-import {UserContext} from "./context/UserContext";
-import {ThemeContext} from "./context/ThemeContext";
-import { initUser, initContracts } from "./utils/Web3Client";
+import { UserContext } from "./context/UserContext";
+import { ThemeContext } from "./context/ThemeContext";
+import { initUser, initUserNFTs, initNetworkId, initContracts } from "./utils/Web3Client";
 
 import Web3 from 'web3'
 import {user1} from "./utils/FakeBackend";
@@ -20,13 +20,16 @@ const App = () => {
     const [loading, setLoading] = useState(true);
     const [constructorHasRun, setConstructorHasRun] = useState(false);
 
-    useEffect(async () => {
+    useEffect(() => {
         if (constructorHasRun) return;
 
-        setUser({
-            "address" : await initUser()
-        });
+        async function fetchUser() {
+            setUser(await initUser());
+        }
+        
+        fetchUser();
         initContracts();
+        initNetworkId();
 
         setLoading(false);
         setConstructorHasRun(true);

@@ -2,7 +2,7 @@ const user1Brief = {
     "username" : "USERNAME",
     "avatar" : "https://www.w3schools.com/css/img_lights.jpg",
     "isMe" : true,
-    "address": "0x7B8d94be739B51Fbc49a5c8Cf7BEBf5112CBd84c",
+    "address": "0xaE819532790A5FA39917Bc0fb7D10870A44C8da8",
 };
 const user2Brief = {
     "username" : "0xE64F63",

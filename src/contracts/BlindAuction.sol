@@ -102,8 +102,8 @@ contract BlindAuction {
         // need to check that NFT is not already staked
         require(!NFT_staked_bool[NFT_contract_address][NFT_tokenID], "NFT is already staked");
         //lock NFT
-        NFTMarketplace marketplace = NFTMarketplace(NFT_contract_address);
-        marketplace.lockNFT(NFT_contract_address, NFT_tokenID);
+        // NFTMarketplace marketplace = NFTMarketplace(NFT_contract_address);
+        // marketplace.lockNFT(NFT_contract_address, NFT_tokenID);
         // start auction
         Auction_Object storage auctionObj = Auction_Objects[NFT_contract_address][NFT_tokenID];
         auctionObj.beneficiary = payable(msg.sender);
