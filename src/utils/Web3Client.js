@@ -11,6 +11,7 @@ import P2PLoan from '../abis/P2PLoan.json';
 import Posts from '../abis/Posts.json';
 
 import Web3 from 'web3';
+import { fetchTokenInfo } from './Utils'
 
 let provider = window.ethereum;
 
@@ -72,6 +73,7 @@ export const initUser = async () => {
         "avatar": "https://www.w3schools.com/css/img_lights.jpg",
         "isMe": true,
         "username": "USERNAME",
+        "ownedLiveAuctions": await initUserOwnedLiveAuctions(selectedUser),
     }
 
     localStorage.setItem("user", JSON.stringify(userData))
@@ -82,14 +84,13 @@ export const initUser = async () => {
 export const initUserNFTs = async (user) => {
     const getOwnedNFTs = async (currLatestId) => {
         let ownedNFTs = [];
-        let regex = /\,(?!\s*?[\{\[\"\'\w])/g;
 
-        for (var i = 1; i <= currLatestId; i++) {
+        for (let i = 1; i <= currLatestId; i++) {
             let tokenURI = await getTokenURI(i)
             
             if ((await ownerOf(i)) == user) {
                 try {
-                    let tokenInfo = ((await (await fetch(tokenURI)).text()).replace(regex, ''));
+                    let tokenInfo = await fetchTokenInfo(tokenURI);
 
                     ownedNFTs.push(
                         {
@@ -110,6 +111,24 @@ export const initUserNFTs = async (user) => {
     userNFTs = await getOwnedNFTs(latestId);
 
     return userNFTs
+}
+
+export const initUserOwnedLiveAuctions = async (user) => {
+
+    const allAuctionObjects = await getAllAuctionObjects();
+    console.log(allAuctionObjects)
+    let ownedAuctionObjects = [];
+
+    for (let i = 0; i < allAuctionObjects.length; i++) {
+        let currAuctionObj = allAuctionObjects[i]
+
+        if (currAuctionObj.auctionEnded) continue;
+        if (!currAuctionObj.beneficiary == user) continue;
+
+        ownedAuctionObjects.push(currAuctionObj.NFT_tokenID)
+    }
+
+    return ownedAuctionObjects
 }
 
 export const initNetworkId = async () => {
@@ -147,6 +166,14 @@ export const initContracts = async () => {
     )
 
     isContractInitialized = true;
+}
+
+//decorator (currently not supported)
+const waitInit = () => {
+    return async function (target) {
+        if (!isUserInitialized) await initUser();
+        if (!isContractInitialized) await initContracts();
+    }
 }
 
 // NFT Manager Functions
@@ -203,11 +230,19 @@ export const selectWinningBid = (selectedLender, bidId, addressNFTManager, token
     ).send({ from: selectedUser });
 }
 
+// @waitInit()
 export const getAllAuctionObjects = async () => {
     if (!isUserInitialized) await initUser();
     if (!isContractInitialized) await initContracts();
 
     return BlindAuctionContract.methods.getAllAuctionObjects().call();
+}
+
+export const getAuctionObject = async (addressNFTManager, tokenId) => {
+    if (!isUserInitialized) await initUser();
+    if (!isContractInitialized) await initContracts();
+
+    return BlindAuctionContract.methods.getAuctionObject(addressNFTManager, tokenId).call();
 }
 
 // P2P Loan Functions

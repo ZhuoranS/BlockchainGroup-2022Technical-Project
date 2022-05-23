@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext, createContext } from "react";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import PostPreview from "../components/PostPreview";
+import AuctionPreview from "../components/AuctionPreview";
 import ProfileHeader from "../components/ProfileHeader";
 import Placeholder from "../components/Placeholder";
 import Loader from "../components/Loader";
@@ -14,7 +15,9 @@ import {post1} from "../utils/FakeBackend";
 import { UserContext } from "../context/UserContext";
 import NFTPreview from "../components/NFTPreview";
 
-import { getTokenURI, ownerOf, getLatestId } from "../utils/Web3Client";
+import { getTokenURI, ownerOf, getLatestId, getAuctionObject } from "../utils/Web3Client";
+import NFTManager from '../abis/NFTManager.json';
+import NFTMarketplace from '../abis/NFTMarketplace.json';
 
 const Wrapper = styled.div`
   
@@ -54,6 +57,21 @@ const Profile = () => {
   const [profile, setProfile] = useState({});
   const [loading, setLoading] = useState(true);
   const [deadend, setDeadend] = useState(false);
+  const [ownedAuctions, setOwnedAuctions] = useState([])
+
+  const networkId = localStorage.getItem("networkId");
+  const addressNFTManager = NFTManager.networks[networkId].address;
+
+  const getOwnedAuctions = async () => {
+    const ownedAuctionsObjs = []
+
+    for (let tokenId of user.ownedLiveAuctions) {
+      let auctionObj = await getAuctionObject(addressNFTManager, tokenId)
+      ownedAuctionsObjs.push(auctionObj)
+    }
+
+    setOwnedAuctions(ownedAuctionsObjs)
+  }
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -64,6 +82,8 @@ const Profile = () => {
         setProfile(res.data);
       })
       .catch((err) => setDeadend(true));
+
+    getOwnedAuctions();
     
   }, [address]);
 
@@ -108,11 +128,11 @@ const Profile = () => {
           <span>Lend</span>
         </div>
         <div
-            style={{ fontWeight: tab === "HISTORY" ? "500" : "" }}
-            onClick={() => setTab("HISTORY")}
+            style={{ fontWeight: tab === "MY_LIVE_AUCTIONS" ? "500" : "" }}
+            onClick={() => setTab("MY_LIVE_AUCTIONS")}
         >
           <SavedIcon    icon="HISTORY" tabId={tab}/>
-          <span>History</span>
+          <span>My Live Auctions</span>
         </div>
         <div
             style={{ fontWeight: tab === "MY_NFTS" ? "500" : "" }}
@@ -174,20 +194,18 @@ const Profile = () => {
           </>
       )}
 
-      {tab === "HISTORY" && (
+      {tab === "MY_LIVE_AUCTIONS" && (
           <>
-            {profile?.history?.length === 0 ? (
+            {ownedAuctions.length === 0 ? (
                 <Placeholder
-                    title="History"
-                    text="Completed loans will show here"
+                    title="My Live Auctions"
+                    text="Any live auctions you created will show here"
                     icon="bookmark"
                 />
             ) : (
                 <div>
                   {/* TODO: make sure to return only posts user has already completed */}
-                  {profile?.history?.map((post) => (
-                      <ExpandedPost key={post._id} prop_post={post} />
-                  ))}
+                  <AuctionPreview auctions={ownedAuctions} active={false} />
                 </div>
             )}
           </>

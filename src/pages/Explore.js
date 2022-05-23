@@ -11,7 +11,7 @@ import {FeedContext} from "../context/FeedContext";
 import Web3 from 'web3'
 import {user1} from "../utils/FakeBackend";
 
-import { getAllAuctionObjects } from "../utils/Web3Client";
+import { getAllAuctionObjects, getTokenURI } from "../utils/Web3Client";
 
 const Wrapper = styled.div`
   display: flex;
@@ -32,6 +32,7 @@ const Wrapper = styled.div`
 const Explore = () => {
   const { setUser } = useContext(UserContext);
   const { feed, setFeed } = useContext(FeedContext);
+  const [auctions, setAuctions] = useState([])
 
   const [loading, setLoading] = useState(true);
 
@@ -44,6 +45,7 @@ const Explore = () => {
     getAllAuctionObjects()
       .then(res => {
         console.log(res)
+        setAuctions(res)
       })
       .catch(err => {
         console.log(err)
