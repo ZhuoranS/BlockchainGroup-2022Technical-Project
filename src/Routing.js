@@ -10,6 +10,7 @@ import DetailedPost from "./pages/DetailedPost";
 import EditProfile from "./pages/EditProfile";
 import ExpandedPost from "./components/ExpandedPost";
 import SelectBid from "./pages/SelectBid";
+import DetailedAuction from "./pages/DetailedAuction";
 
 const Routing = () => {
   return (
@@ -19,6 +20,7 @@ const Routing = () => {
         <Switch>
           <Route exact path="/" component={Explore} />
           <Route path="/explore" component={Explore} />
+          <Route path="/auctions/:tokenId" component={DetailedAuction} />
           <Route path="/p/:postAddress" component={DetailedPost} />
           <Route path="/e/:postAddress" component={ExpandedPost} />
           <Route path="/select/:postAddress" component={SelectBid} />

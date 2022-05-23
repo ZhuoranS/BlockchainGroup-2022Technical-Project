@@ -8,10 +8,15 @@ import useInput from "../hooks/useInput";
 import { client } from "../utils";
 import { timeSince } from "../utils";
 import { CloseIcon, MoreIcon, CommentIcon, InboxIcon } from "../components/Icons";
+import LockClockOutlinedIcon from '@mui/icons-material/LockClockOutlined';
 import {toast} from "react-toastify";
 import Bid from "../components/Bid"
 import { UserContext } from "../context/UserContext";
 import Button from "../styles/Button";
+
+import { fetchTokenInfo } from "../utils/Utils";
+import { getAuctionObject } from "../utils/Web3Client";
+import NFTManager from '../abis/NFTManager.json';
 
 const Wrapper = styled.div`
   display: grid;
@@ -37,14 +42,23 @@ const Wrapper = styled.div`
     border-right: 1px solid ${(props) => props.theme.borderColor};
   }
 
-  .bid-history {
+  .footer {
+    grid-area: footer;
+    border-top: 5px solid ${(props) => props.theme.borderColor};
+    /* border: 2px solid ${(props) => props.theme.borderColor}; */
+  }
+
+  .bid-history-unlocked {
     grid-area: bid_history;
     /* border-right: 1px solid ${(props) => props.theme.borderColor}; */
   }
 
-  .footer {
-    grid-area: footer;
-    /* border: 2px solid ${(props) => props.theme.borderColor}; */
+  .bid-history-locked {
+    margin: auto;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   /* .post-info {
@@ -59,7 +73,7 @@ const Wrapper = styled.div`
     align-items: center;
     justify-content: space-between;
     padding: 1rem;
-    border-bottom: 1px solid ${(props) => props.theme.borderColor};
+    border-bottom: 5px solid ${(props) => props.theme.borderColor};
   }
 
   .post-header {
@@ -82,7 +96,6 @@ const Wrapper = styled.div`
     display: grid;
     grid-template-columns: 5fr 5fr 5fr 2fr;
     grid-gap: 1rem;
-    border-top: 1px solid ${(props) => props.theme.borderColor};
     padding: 1rem;
   }
 
@@ -131,13 +144,15 @@ const Wrapper = styled.div`
   }
 
   .select-bid-container {
-    align-self: center;
-    border: 2px dashed solid;
-  
+    padding: 1rem;
+
+    /* display: flex;
+    flex-direction: column; */
   }
 
   .select-bid-button {
     padding: 1rem;
+    width: 100%;
   }
 
   
@@ -165,20 +180,21 @@ const Wrapper = styled.div`
       flex-direction: column;
     }
 
-    .bid-history {
-      border-left: 1px solid ${(props) => props.theme.borderColor};
-      max-height: 200px;
+    .bid-history-locked {
+      border-top: 1px solid ${(props) => props.theme.borderColor};
     }
   }
 `;
 
-const DetailedPost = () => {
+const DetailedAuction = () => {
   const history = useHistory();
-  const { postAddress } = useParams();
+  const { tokenId } = useParams();
 
   const [loading, setLoading] = useState(true);
   const [deadend, setDeadend] = useState(false);
   const [post, setPost] = useState({});
+  const [tokenInfo, setTokenInfo] = useState({})
+  const [auction, setAuction] = useState({})
 
   const {user} = useContext(UserContext);
 
@@ -187,7 +203,14 @@ const DetailedPost = () => {
   const newDuration = useInput("");
   const [bids, setBids] = useState([]);
 
+  const networkId = localStorage.getItem("networkId");
+  const addressNFTManager = NFTManager.networks[networkId].address;
+
   const handleAddBid = (e) => {
+    if (!newAmount.value || !newInterest.value || !newDuration.value) {
+        return toast.error("Please fill in all fields");
+    }
+
     newAmount.setValue("");
     newInterest.setValue("");
     newDuration.setValue("");
@@ -195,17 +218,36 @@ const DetailedPost = () => {
     return toast.success("Sorry, the bid feature isn't finished yet");
   };
 
+  const getTokenInfo = async () => {
+    let newTokenInfo = await fetchTokenInfo(tokenId);
+    let parsedTokenInfo = JSON.parse(newTokenInfo)
+    
+    setTokenInfo(parsedTokenInfo)
+  }
+
+  const getAuctionInfo = async () => {
+    let auction = await getAuctionObject(addressNFTManager, tokenId)
+    console.log(auction)
+    setAuction(auction)
+  }
+
   // TODO: implement bidding history visibility control
   useEffect(() => {
-    client(`/posts/${postAddress}`)
-      .then((res) => {
-        setPost(res.data);
-        setBids(res.data.bidHistory);
-        setLoading(false);
-        setDeadend(false);
-      })
-      .catch((err) => setDeadend(true));
-  }, [postAddress]);
+    // client(`/posts/${postAddress}`)
+    //   .then((res) => {
+    //     setPost(res.data);
+    //     setBids(res.data.bidHistory);
+    //     setLoading(false);
+    //     setDeadend(false);
+    //   })
+    //   .catch((err) => setDeadend(true));
+
+    setLoading(false);
+    setDeadend(false);
+    getTokenInfo(tokenId);
+    getAuctionInfo();
+
+  }, []);
 
   if (!deadend && loading) {
     return <Loader />;
@@ -227,11 +269,10 @@ const DetailedPost = () => {
         <div className="post-header-wrapper">
           <div className="post-header">
             <h3>
-              {post?.title}
+              <strong>{tokenInfo?.name}</strong>
             </h3>
-            <h5 className="pointer"
-                onClick={() => history.push(`/${post?.user}`)}>
-              {`owned by ${post?.user.substr(0, 8)}`}
+            <h5>
+              {`owned by ${auction?.beneficiary?.substr(0, 8)}`}
             </h5>
           </div>
           <div className="auction-details"><h1>AUCTION DETAILS</h1></div>
@@ -244,33 +285,44 @@ const DetailedPost = () => {
       <div className="nft-image">
         <img
           className="post-img"
-          src={post?.file}
+          src={tokenInfo?.image}
           alt="post"
         />
       </div>
 
-      <div className="bid-history">
-        <div className="bids">
-            {bids.map((bid) => (
-              <Bid user={bid.user} amount={bid.amount} duration={bid.duration} interest={bid.interest}/>
-            ))}
+      {auction?.auctionEnded ? 
+        <div className="bid-history-unlocked">
+            {/* <div className="bids">
+                {bids.map((bid) => (
+                <Bid user={bid.user} amount={bid.amount} duration={bid.duration} interest={bid.interest}/>
+                ))}
+            </div> */}
+            <p>BID HISTORY</p>
         </div>
-      </div>
+      :
+        <div className="bid-history-locked">
+            <LockClockOutlinedIcon style={{"fontSize": "200px", "cursor": "default"}} />
+            <h3>Others' Bids Locked Until Auction Ends</h3>
+        </div>
+      }
+    
 
       <div className="footer">
-        <div className="add-bid">
-          {post?.user.substr(0,8) == user.username 
+          {auction?.beneficiary?.substr(0,8) == user.address.substr(0,8) 
             ? 
               <div className="select-bid-container">
-                <button 
+                <Button
                   className="select-bid-button" 
-                  onClick={() => history.push(`/select/${post.address}`)}
+                  onClick={() => history.push(`/select/${auction?.NFT_tokenID}`)}
+                  disabled={!auction?.auctionEnded}
+                  style={{"cursor": auction?.auctionEnded ? "pointer" : "not-allowed"}}
+                  secondary
                 >
                   Select Winning Bid
-                </button>
+                </Button>
               </div> 
             : 
-              <>
+            <div className="add-bid">
                 <div className="input-container">
                   <input
                     className="amount-field"
@@ -307,13 +359,12 @@ const DetailedPost = () => {
                   <span className="units-field">%</span>
                 </div>
                 <Button onClick={handleAddBid} secondary>Place Bid</Button>
-              </>
+              </div>
             }
-          </div>
         </div>
 
     </Wrapper>
   );
 };
 
-export default DetailedPost;
+export default DetailedAuction;

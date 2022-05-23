@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import styled from "styled-components";
 import PostPreview from "../components/PostPreview";
+import AuctionPreview from "../components/AuctionPreview";
 import Loader from "../components/Loader"; 
 import { client } from "../utils";
 import Posts from "../contracts/Posts.sol";
@@ -65,7 +66,7 @@ const Explore = () => {
       <div className="search">
         <Search />
       </div>
-      <PostPreview posts={feed} />
+      <AuctionPreview auctions={auctions} />
     </Wrapper>
   );
 };

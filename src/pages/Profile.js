@@ -17,7 +17,6 @@ import NFTPreview from "../components/NFTPreview";
 
 import { getTokenURI, ownerOf, getLatestId, getAuctionObject } from "../utils/Web3Client";
 import NFTManager from '../abis/NFTManager.json';
-import NFTMarketplace from '../abis/NFTMarketplace.json';
 
 const Wrapper = styled.div`
   
@@ -67,6 +66,7 @@ const Profile = () => {
 
     for (let tokenId of user.ownedLiveAuctions) {
       let auctionObj = await getAuctionObject(addressNFTManager, tokenId)
+      console.log(auctionObj)
       ownedAuctionsObjs.push(auctionObj)
     }
 
@@ -75,14 +75,15 @@ const Profile = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    client(`/${address}`)
-      .then((res) => {
-        setLoading(false);
-        setDeadend(false);
-        setProfile(res.data);
-      })
-      .catch((err) => setDeadend(true));
-
+    // client(`/${address}`)
+    //   .then((res) => {
+    //     setLoading(false);
+    //     setDeadend(false);
+    //     setProfile(res.data);
+    //   })
+    //   .catch((err) => setDeadend(true));
+    setLoading(false);
+    setDeadend(false);
     getOwnedAuctions();
     
   }, [address]);

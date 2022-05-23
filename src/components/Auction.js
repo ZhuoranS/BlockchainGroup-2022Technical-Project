@@ -54,8 +54,7 @@ const Auction = ({ auction }) => {
   const [tokenInfo, setTokenInfo] = useState({})
 
   const getTokenInfo = async () => {
-      let tokenURI = await getTokenURI(auction.NFT_tokenID)
-      let newTokenInfo = await fetchTokenInfo(tokenURI);
+      let newTokenInfo = await fetchTokenInfo(auction.NFT_tokenID);
       let parsedTokenInfo = JSON.parse(newTokenInfo)
       
       setTokenInfo(parsedTokenInfo)

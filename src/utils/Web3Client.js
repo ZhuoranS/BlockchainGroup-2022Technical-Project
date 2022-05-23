@@ -86,11 +86,10 @@ export const initUserNFTs = async (user) => {
         let ownedNFTs = [];
 
         for (let i = 1; i <= currLatestId; i++) {
-            let tokenURI = await getTokenURI(i)
             
             if ((await ownerOf(i)) == user) {
                 try {
-                    let tokenInfo = await fetchTokenInfo(tokenURI);
+                    let tokenInfo = await fetchTokenInfo(i);
 
                     ownedNFTs.push(
                         {
