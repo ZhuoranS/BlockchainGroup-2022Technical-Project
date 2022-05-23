@@ -11,6 +11,7 @@ export const NFTWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
+  align-items: center;
 
   overflow-y: scroll;
 
@@ -37,8 +38,8 @@ export const NFTWrapper = styled.div`
 
 const NFT = ({ nft }) => {
   return (
-    <NFTWrapper>
-      <CardContainer>
+    <CardContainer>
+      <NFTWrapper>
 
         <div className="nft-img">
           <img src={nft.image}></img>
@@ -50,8 +51,8 @@ const NFT = ({ nft }) => {
           <em>{nft.description}</em>
         </div>
 
-      </CardContainer>
-    </NFTWrapper>
+      </NFTWrapper>
+    </CardContainer>
   )
 }
 

@@ -65,8 +65,8 @@ const Auction = ({ auction }) => {
   }, [])
 
   return (
-      <AuctionWrapper>
-        <CardContainer>
+      <CardContainer>
+        <AuctionWrapper>
 
             <div className="img-wrapper">
             {auction?.auctionEnded ?
@@ -103,8 +103,8 @@ const Auction = ({ auction }) => {
                 </h5>
             </div>
 
-        </CardContainer>
-      </AuctionWrapper>
+        </AuctionWrapper>
+      </CardContainer>
   );
 };
 
