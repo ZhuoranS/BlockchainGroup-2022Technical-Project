@@ -131,7 +131,7 @@ const Profile = () => {
             style={{ fontWeight: tab === "MY_LIVE_AUCTIONS" ? "500" : "" }}
             onClick={() => setTab("MY_LIVE_AUCTIONS")}
         >
-          <SavedIcon    icon="HISTORY" tabId={tab}/>
+          <SavedIcon    icon="MY_LIVE_AUCTIONS" tabId={tab}/>
           <span>My Live Auctions</span>
         </div>
         <div
