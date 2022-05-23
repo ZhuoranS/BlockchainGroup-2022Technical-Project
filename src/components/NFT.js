@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import CardContainer from './CardContainer';
 
 export const NFTWrapper = styled.div`
   height: 100%;
@@ -10,7 +11,6 @@ export const NFTWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
-  align-items: center;
 
   overflow-y: scroll;
 
@@ -22,6 +22,7 @@ export const NFTWrapper = styled.div`
   
   .nft-name {
     height: 10%;
+    text-align: center;
   }
   
   .nft-description { 
@@ -37,15 +38,19 @@ export const NFTWrapper = styled.div`
 const NFT = ({ nft }) => {
   return (
     <NFTWrapper>
-      <div className="nft-img">
-        <img src={nft.image}></img>
-      </div>
-      <div className="nft-name">
-        <strong>{nft.name}</strong>
-      </div>
-      <div className="nft-description">
-        <em>{nft.description}</em>
-      </div>
+      <CardContainer>
+
+        <div className="nft-img">
+          <img src={nft.image}></img>
+        </div>
+        <div className="nft-name">
+          <strong>{nft.name}</strong>
+        </div>
+        <div className="nft-description">
+          <em>{nft.description}</em>
+        </div>
+
+      </CardContainer>
     </NFTWrapper>
   )
 }

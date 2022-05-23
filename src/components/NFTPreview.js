@@ -71,17 +71,9 @@ const Container = styled.div`
 const NFTPreview = ({ nfts }) => {
   return (
     <Container>
-        {nfts?.map((nft) => (
-            <div className="square">
-                <div className="content">
-                    <div className="table">
-                        <div className="table-cell">
-                            <NFT key={nft.tokenId} nft={nft.tokenInfo} />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        ))}
+      {nfts?.map((nft) => (
+          <NFT key={nft.tokenId} nft={nft.tokenInfo} />
+      ))}
     </Container>
   )
 }

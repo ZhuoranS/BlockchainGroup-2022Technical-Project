@@ -220,9 +220,6 @@ const CreatePost = ({ open, onClose, post }) => {
 
     // if modal is not open, return null
     if (!open) return null;
-    console.log(NFTManager.networks[5777].address)
-    console.log(NFTMarketplace.networks[5777].address)
-
 
     const handleSubmitPost = async () => {
         // all fields must be filled
