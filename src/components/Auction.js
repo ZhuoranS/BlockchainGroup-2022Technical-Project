@@ -38,6 +38,10 @@ export const AuctionWrapper = styled.div`
     width: 100%;
   }
 
+  .auction-info {
+      height: 10%;
+  }
+
   .username {
     padding-right: 0.3rem;
   }
@@ -68,13 +72,13 @@ const Auction = ({ auction }) => {
             <div className="img-wrapper">
             {auction?.auctionEnded ?
                 <img
-                    onClick={() => history.push(`/auction/live/${auction?.NFT_tokenID}`)}
+                    onClick={() => history.push(`/auctions/completed/${auction?.NFT_tokenID}`)}
                     src={tokenInfo?.image}
                     alt="auction-img"
                 />
                 :
                 <img
-                    onClick={() => history.push(`/auction/done/${auction?.NFT_tokenID}`)}
+                    onClick={() => history.push(`/auctions/${auction?.NFT_tokenID}`)}
                     src={tokenInfo?.image}
                     alt="auction-img"
                 />
@@ -84,25 +88,20 @@ const Auction = ({ auction }) => {
 
 
             <div className="auction-footer">
-                <div>
-                    <h6>
-                        <span className="title bold">
-                            {tokenInfo?.name}
-                        </span>
-                        <span className="secondary">
-                        {" | posted by "}
-                        </span>
-                        <span
-                            className="pointer"
-                            onClick={() => history.push(`/${auction?.beneficiary}`)}
-                        >
-                            {auction?.beneficiary.substr(0,8)}
-                        </span>
-                    </h6>
-                    <h6>
-                        <span className="secondary"> ___ LEFT </span>
-                    </h6>
+                <div className="auction-info">
+                    <b className="title bold">
+                        {tokenInfo?.name}
+                    </b>
+                    <span className="secondary">
+                    {" | posted by "}
+                    </span>
+                    <span>
+                        {auction?.beneficiary.substr(0,8)}
+                    </span>
                 </div>
+                <h5>
+                    <span className="secondary"> ___ LEFT </span>
+                </h5>
             </div>
 
         </CardContainer>
