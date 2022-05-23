@@ -67,7 +67,10 @@ const Profile = () => {
     for (let tokenId of user.ownedLiveAuctions) {
       let auctionObj = await getAuctionObject(addressNFTManager, tokenId)
       console.log(auctionObj)
-      ownedAuctionsObjs.push(auctionObj)
+
+      if (auctionObj.beneficiary == user.address) {
+        ownedAuctionsObjs.push(auctionObj)
+      }
     }
 
     setOwnedAuctions(ownedAuctionsObjs)
