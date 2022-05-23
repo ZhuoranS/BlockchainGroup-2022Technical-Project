@@ -9,6 +9,7 @@ import {toast} from "react-toastify";
 import Search from "../components/Search";
 import {UserContext} from "../context/UserContext";
 import {FeedContext} from "../context/FeedContext";
+import BedtimeOutlinedIcon from '@mui/icons-material/BedtimeOutlined';
 import Web3 from 'web3'
 import {user1} from "../utils/FakeBackend";
 
@@ -38,23 +39,18 @@ const Explore = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    client("/posts/bidding").then((res) => {
-      setFeed(res.data);
-      setLoading(false);
-    });
 
     getAllAuctionObjects()
       .then(res => {
         console.log(res)
-        setAuctions(res)
+        setAuctions(res.filter(auction => !auction.auctionEnded))
+        setLoading(false);
       })
       .catch(err => {
         console.log(err)
       })
 
-  }, [setFeed]);
-
-
+  }, []);
 
   if (loading) {
     return <Loader />;
@@ -66,7 +62,16 @@ const Explore = () => {
       <div className="search">
         <Search />
       </div>
-      <AuctionPreview auctions={auctions} />
+      
+      {auctions.length > 0 ?
+        <AuctionPreview auctions={auctions} />
+        :
+        <>
+          <BedtimeOutlinedIcon style={{"fontSize": "200px"}}/>
+          <em>NOT MUCH HAPPENING...</em>
+        </>
+      }
+      
     </Wrapper>
   );
 };
