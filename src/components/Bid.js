@@ -9,7 +9,7 @@ const BidWrapper = styled.div`
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
-    margin: auto;
+    margin: 1rem;
 
     grid-template-columns: 4fr 3fr 3fr 3fr;
     grid-template-areas:
@@ -26,15 +26,8 @@ const BidWrapper = styled.div`
     text-align: center;
   }
 
-  /* padding: 0.4rem 0; */
-
   .username {
     font-size: larger;
-    cursor: pointer;
-
-    &:active {
-      color: lightgray;
-    }
   }
 
   .amount {
@@ -52,21 +45,20 @@ const BidWrapper = styled.div`
 
 `;
 
-const Bid = ({ user, amount, duration, interest, time }) => {
+const Bid = ({ user, amount, duration, interest, time, bidId }) => {
     const history = useHistory();
 
     return (
         <BidWrapper>
             <div class="bid-container">
                 <span
-                    onClick={() => history.push(`/${user}`)}
                     className="bold bid-field username"
                 >
                   {user.substr(0,8)}
                 </span>
                 <div className="bid-field amount">{amount} ETH</div>
-                <div className="bid-field duration">{duration} __ Mos</div>
-                <div className="bid-field interest">{interest} __ %</div>
+                <div className="bid-field duration">{duration} Days</div>
+                <div className="bid-field interest">{interest} %</div>
             </div>
         </BidWrapper>
     );

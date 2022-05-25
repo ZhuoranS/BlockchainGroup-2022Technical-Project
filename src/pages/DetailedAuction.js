@@ -15,7 +15,7 @@ import { UserContext } from "../context/UserContext";
 import Button from "../styles/Button";
 
 import { fetchTokenInfo } from "../utils/Utils";
-import { getAuctionObject } from "../utils/Web3Client";
+import { getAuctionObject, makeBid } from "../utils/Web3Client";
 import NFTManager from '../abis/NFTManager.json';
 
 const Wrapper = styled.div`
@@ -54,7 +54,7 @@ const Wrapper = styled.div`
   }
 
   .bid-history-locked {
-    margin: auto;
+    margin: 5rem auto auto auto;
 
     display: flex;
     flex-direction: column;
@@ -195,27 +195,30 @@ const DetailedAuction = () => {
   const [post, setPost] = useState({});
   const [tokenInfo, setTokenInfo] = useState({})
   const [auction, setAuction] = useState({})
+  const [currUserBids, setCurrUserBids] = useState([])
 
   const {user} = useContext(UserContext);
 
   const newAmount = useInput("");
   const newInterest = useInput("");
-  const newDuration = useInput("");
+  const newRepaymentPeriod = useInput("");
   const [bids, setBids] = useState([]);
 
   const networkId = localStorage.getItem("networkId");
   const addressNFTManager = NFTManager.networks[networkId].address;
 
   const handleAddBid = (e) => {
-    if (!newAmount.value || !newInterest.value || !newDuration.value) {
+    if (!newAmount.value || !newInterest.value || !newRepaymentPeriod.value) {
         return toast.error("Please fill in all fields");
     }
 
+    makeBid(newAmount.value, newInterest.value, newRepaymentPeriod.value, false, addressNFTManager, tokenId)
+
     newAmount.setValue("");
     newInterest.setValue("");
-    newDuration.setValue("");
-    // TODO: implement bidding function
-    return toast.success("Sorry, the bid feature isn't finished yet");
+    newRepaymentPeriod.setValue("");
+
+    return toast.success("Bid successfully placed");
   };
 
   const getTokenInfo = async () => {
@@ -226,9 +229,24 @@ const DetailedAuction = () => {
   }
 
   const getAuctionInfo = async () => {
-    let auction = await getAuctionObject(addressNFTManager, tokenId)
-    console.log(auction)
+    let auction = await getAuctionObject(addressNFTManager, tokenId);
     setAuction(auction)
+  }
+
+  const getCurrUserBids = async () => {
+    let userBids = [];
+    let auction = await getAuctionObject(addressNFTManager, tokenId);
+
+    for (let i = 0; i < auction.revealedBids.length; i++) {
+      let bid = auction.revealedBids[i]
+
+      if (bid.bidder_address == user.address) {
+        bid.bidId = i
+        userBids.push(bid)
+      }
+    }
+
+    setCurrUserBids(userBids)
   }
 
   // TODO: implement bidding history visibility control
@@ -246,6 +264,7 @@ const DetailedAuction = () => {
     setDeadend(false);
     getTokenInfo(tokenId);
     getAuctionInfo();
+    getCurrUserBids();
 
   }, []);
 
@@ -292,17 +311,29 @@ const DetailedAuction = () => {
 
       {auction?.auctionEnded ? 
         <div className="bid-history-unlocked">
-            {/* <div className="bids">
+            <div className="bids">
                 {bids.map((bid) => (
                 <Bid user={bid.user} amount={bid.amount} duration={bid.duration} interest={bid.interest}/>
                 ))}
-            </div> */}
+            </div>
             <p>BID HISTORY</p>
         </div>
       :
-        <div className="bid-history-locked">
-            <LockClockOutlinedIcon style={{"fontSize": "200px", "cursor": "default"}} />
-            <h3>Others' Bids Locked Until Auction Ends</h3>
+        <div>
+          {currUserBids?.map(bid => (
+            <Bid 
+              user={bid?.bidder_address}
+              amount={parseInt(bid?.loan_amount._hex, 16)}
+              duration={parseInt(bid?.repayment_time._hex)}
+              interest={parseInt(bid?.interest_rate._hex, 16)}
+              time={0}
+              bidId={bid.bidId}
+            />
+          ))}
+          <div className="bid-history-locked">
+              <LockClockOutlinedIcon style={{"fontSize": "200px", "cursor": "default"}} />
+              <h3>Others' Bids Locked Until Auction Ends</h3>
+          </div>
         </div>
       }
     
@@ -337,17 +368,6 @@ const DetailedAuction = () => {
                 </div>
                 <div className="input-container">
                   <input
-                    className="duration-field"
-                    type="number"
-                    placeholder="Loan Duration"
-                    min="1"
-                    value={newDuration.value}
-                    onChange={newDuration.onChange}
-                  />
-                  <span className="units-field">Mos</span>
-                </div>
-                <div className="input-container">
-                  <input
                     className="interest-field"
                     type="number"
                     placeholder="Interest Rate"
@@ -357,6 +377,18 @@ const DetailedAuction = () => {
                     onChange={newInterest.onChange}
                   />
                   <span className="units-field">%</span>
+                </div>
+                <div className="input-container">
+                  <input
+                    className="repayment-field"
+                    type="number"
+                    placeholder="Repayment Period"
+                    min="1"
+                    step="1"
+                    value={newRepaymentPeriod.value}
+                    onChange={newRepaymentPeriod.onChange}
+                  />
+                  <span className="units-field">Days</span>
                 </div>
                 <Button onClick={handleAddBid} secondary>Place Bid</Button>
               </div>

@@ -48,6 +48,7 @@ const Explore = () => {
       })
       .catch(err => {
         console.log(err)
+        setLoading(false);
       })
 
   }, []);
@@ -63,7 +64,7 @@ const Explore = () => {
         <Search />
       </div>
       
-      {auctions.length > 0 ?
+      {auctions?.length > 0 ?
         <AuctionPreview auctions={auctions} />
         :
         <>

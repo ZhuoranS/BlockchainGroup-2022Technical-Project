@@ -353,7 +353,7 @@ const CreatePost = ({ open, onClose, post }) => {
                 step: "0.25"
               }}
               type="number"
-              placeholder="Interest Rate"
+              placeholder="Max Interest Rate"
               style={{width: "100%", margin: "1rem 0"}}
               value={maxInterest.value}
               onChange={maxInterest.onChange}
