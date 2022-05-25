@@ -15,7 +15,7 @@ import {post1} from "../utils/FakeBackend";
 import { UserContext } from "../context/UserContext";
 import NFTPreview from "../components/NFTPreview";
 
-import { getTokenURI, ownerOf, getLatestId, getAuctionObject } from "../utils/Web3Client";
+import { getTokenURI, ownerOf, getLatestId, getAuctionObject, endAuction } from "../utils/Web3Client";
 import NFTManager from '../abis/NFTManager.json';
 
 const Wrapper = styled.div`
@@ -57,6 +57,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [deadend, setDeadend] = useState(false);
   const [ownedAuctions, setOwnedAuctions] = useState([])
+  const [bidAuctions, setBidAuctions] = useState([])
 
   const networkId = localStorage.getItem("networkId");
   const addressNFTManager = NFTManager.networks[networkId].address;
@@ -66,14 +67,21 @@ const Profile = () => {
 
     for (let tokenId of user.ownedLiveAuctions) {
       let auctionObj = await getAuctionObject(addressNFTManager, tokenId)
-      console.log(auctionObj)
-
-      if (auctionObj.beneficiary == user.address) {
-        ownedAuctionsObjs.push(auctionObj)
-      }
+      ownedAuctionsObjs.push(auctionObj)
     }
 
     setOwnedAuctions(ownedAuctionsObjs)
+  }
+
+  const getBidAuctions = async () => {
+    const bidAuctionsObjs = []
+
+    for (let tokenId of user.bidAuctions) {
+      let auctionObj = await getAuctionObject(addressNFTManager, tokenId)
+      bidAuctionsObjs.push(auctionObj)
+    }
+
+    setBidAuctions(bidAuctionsObjs)
   }
 
   useEffect(() => {
@@ -88,6 +96,7 @@ const Profile = () => {
     setLoading(false);
     setDeadend(false);
     getOwnedAuctions();
+    getBidAuctions();
     
   }, [address]);
 
@@ -150,7 +159,7 @@ const Profile = () => {
 
       {tab === "BIDS" && (
         <>
-          {profile?.bidPosts?.length === 0 ? (
+          {bidAuctions?.length === 0 ? (
             <Placeholder
               title="Bids"
               text="Once you start making bids, they'll appear here"
@@ -158,7 +167,7 @@ const Profile = () => {
             />
           ) : (
             // TODO: make sure to return only posts for bidding
-            <PostPreview posts={profile?.bidPosts} />
+            <AuctionPreview auctions={bidAuctions} />
           )}
         </>
       )}
@@ -209,7 +218,7 @@ const Profile = () => {
             ) : (
                 <div>
                   {/* TODO: make sure to return only posts user has already completed */}
-                  <AuctionPreview auctions={ownedAuctions} active={false} />
+                  <AuctionPreview auctions={ownedAuctions} />
                 </div>
             )}
           </>

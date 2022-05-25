@@ -44,15 +44,18 @@ const Explore = () => {
 
   const setCompletedAuctions = async (auctions) => {
     for (let auction of auctions) {
-      console.log(auction)
-      let auctionEndTime = auction.auctionEndTime
-      let nowTime = new Date().getTime() / 1000
+      let currTime = new Date().getTime() / 1000
       
-      if (nowTime >= auctionEndTime) {
-        // auction alrady ended
-        console.log(auction.NFT_tokenID)
-        await endAuction(addressNFTManager, auction.NFT_tokenID)
+      try {
+        if (currTime >= auction.auctionEndTime) {
+          // auction alrady ended
+          console.log(auction.NFT_tokenID)
+          await endAuction(addressNFTManager, auction.NFT_tokenID)
+        }
+      } catch {
+        continue;
       }
+
     }
   }
 

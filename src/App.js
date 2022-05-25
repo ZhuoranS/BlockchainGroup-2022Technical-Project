@@ -6,7 +6,7 @@ import GlobalStyle from "./styles/GlobalStyle";
 import Routing from "./Routing";
 import { UserContext } from "./context/UserContext";
 import { ThemeContext } from "./context/ThemeContext";
-import { initUser, initUserNFTs, initNetworkId, initContracts } from "./utils/Web3Client";
+import { initUser, initUserNFTs, initNetworkId, initContracts, initAuctions } from "./utils/Web3Client";
 
 import Web3 from 'web3'
 import {user1} from "./utils/FakeBackend";
@@ -30,6 +30,7 @@ const App = () => {
         fetchUser();
         initContracts();
         initNetworkId();
+        initAuctions();
 
         setLoading(false);
         setConstructorHasRun(true);

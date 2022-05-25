@@ -74,6 +74,7 @@ export const initUser = async () => {
         "isMe": true,
         "username": "USERNAME",
         "ownedLiveAuctions": await initUserOwnedLiveAuctions(selectedUser),
+        "bidAuctions": await initUserBidAuctions(selectedUser),
     }
 
     localStorage.setItem("user", JSON.stringify(userData))
@@ -122,12 +123,54 @@ export const initUserOwnedLiveAuctions = async (user) => {
         let currAuctionObj = allAuctionObjects[i]
 
         if (currAuctionObj.auctionEnded) continue;
-        if (!currAuctionObj.beneficiary == user) continue;
+        if (!(currAuctionObj.beneficiary == user)) continue;
 
         ownedAuctionObjects.push(currAuctionObj.NFT_tokenID)
     }
 
     return ownedAuctionObjects
+}
+
+export const initUserBidAuctions = async (user) => {
+    const allAuctionObjects = await getAllAuctionObjects();
+    let bidAuctions = [];
+
+    for (let i = 0; i < allAuctionObjects.length; i++) {
+        let currAuctionObj = allAuctionObjects[i]
+
+        if (currAuctionObj.auctionEnded) continue;
+
+        for (let bid of currAuctionObj.revealedBids) {
+            if (bid.bidder_address == user) {
+                bidAuctions.push(currAuctionObj.NFT_tokenID);
+                break;
+            }
+        }
+
+    }
+
+    return bidAuctions
+}
+
+export const initAuctions = async () => {
+    const auctions = await getAllAuctionObjects();
+    const networkId = await initNetworkId();
+    const addressNFTManager = NFTManager.networks[networkId].address;
+
+    for (let auction of auctions) {
+        let currTime = new Date().getTime() / 1000
+        
+        try {
+            if (currTime >= auction.auctionEndTime) {
+                // auction alrady ended
+                console.log(auction.NFT_tokenID)
+                await endAuction(addressNFTManager, auction.NFT_tokenID)
+            }
+        } catch {
+            console.log("ERROR with ending auction")
+        }
+
+    }
 }
 
 export const initNetworkId = async () => {
