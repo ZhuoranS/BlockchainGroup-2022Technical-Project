@@ -21,7 +21,7 @@ const NavWrapper = styled.div`
   position: fixed;
   top: 0;
   width: 100%;
-  background-color: ${(props) => props.theme.white};
+  background-color: ${(props) => props.theme.nav};
   border-bottom: 1px solid ${(props) => props.theme.borderColor};
   padding: 2rem 0;
   z-index: 10;
