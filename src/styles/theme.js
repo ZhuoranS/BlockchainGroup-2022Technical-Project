@@ -1,7 +1,7 @@
 export const lightTheme = {
   primaryColor: "#262626",
   secondaryColor: "#B2B2B2",
-  nav: "rgba(252, 219, 236, 0.4)",
+  nav: "rgba(253, 238, 246, 1)",
   // bg: "#FAFAFA",
   bg:"#FFF",
   blue: "#0095F6",
