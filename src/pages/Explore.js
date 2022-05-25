@@ -13,7 +13,8 @@ import BedtimeOutlinedIcon from '@mui/icons-material/BedtimeOutlined';
 import Web3 from 'web3'
 import {user1} from "../utils/FakeBackend";
 
-import { getAllAuctionObjects, getTokenURI } from "../utils/Web3Client";
+import { getAllAuctionObjects, getTokenURI, getAuctionObject, endAuction } from "../utils/Web3Client";
+import NFTManager from '../abis/NFTManager.json';
 
 const Wrapper = styled.div`
   display: flex;
@@ -38,11 +39,29 @@ const Explore = () => {
 
   const [loading, setLoading] = useState(true);
 
+  const networkId = localStorage.getItem("networkId");
+  const addressNFTManager = NFTManager.networks[networkId].address;
+
+  const setCompletedAuctions = async (auctions) => {
+    for (let auction of auctions) {
+      console.log(auction)
+      let auctionEndTime = auction.auctionEndTime
+      let nowTime = new Date().getTime() / 1000
+      
+      if (nowTime >= auctionEndTime) {
+        // auction alrady ended
+        console.log(auction.NFT_tokenID)
+        await endAuction(addressNFTManager, auction.NFT_tokenID)
+      }
+    }
+  }
+
   useEffect(() => {
 
     getAllAuctionObjects()
-      .then(res => {
+      .then(async (res) => {
         console.log(res)
+        // await setCompletedAuctions(res)
         setAuctions(res.filter(auction => !auction.auctionEnded))
         setLoading(false);
       })

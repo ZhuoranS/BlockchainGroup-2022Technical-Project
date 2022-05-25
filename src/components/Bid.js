@@ -50,7 +50,7 @@ const Bid = ({ user, amount, duration, interest, time, bidId }) => {
 
     return (
         <BidWrapper>
-            <div class="bid-container">
+            <div className="bid-container">
                 <span
                     className="bold bid-field username"
                 >

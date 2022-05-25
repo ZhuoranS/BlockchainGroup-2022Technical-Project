@@ -23,7 +23,7 @@ const Routing = () => {
           <Route path="/auctions/:tokenId" component={DetailedAuction} />
           <Route path="/p/:postAddress" component={DetailedPost} />
           <Route path="/e/:postAddress" component={ExpandedPost} />
-          <Route path="/select/:postAddress" component={SelectBid} />
+          <Route path="/select/:tokenId" component={SelectBid} />
           <Route path="/accounts/edit" component={EditProfile} />
           <Route path="/:address" component={Profile} />
         </Switch>

@@ -207,24 +207,24 @@ export const getTokenURI = async (tokenId) => {
 
 // NFT Marketplace Functions
 export const lockNFT = (addressNFTManager, tokenId) => {
-    NFTMarketplaceContract.methods.lockNFT(addressNFTManager, tokenId).send({ from: selectedUser });
+    return NFTMarketplaceContract.methods.lockNFT(addressNFTManager, tokenId).send({ from: selectedUser });
 }
 
 // Blind Auction Functions
 export const startAuction = (minLoanAmount, maxInterestRate, minRepaymentPeriod, auctionDuration, addressNFTManager, tokenId) => {
-    BlindAuctionContract.methods.startAuction(
+    return BlindAuctionContract.methods.startAuction(
         minLoanAmount, maxInterestRate, minRepaymentPeriod, addressNFTManager, tokenId, auctionDuration
     ).send({ from: selectedUser });
 }
 
 export const makeBid = (loanAmount, interestRate, repaymentPeriod, isFake, addressNFTManager, tokenId) => {
-    BlindAuctionContract.methods.makeBid(
+    return BlindAuctionContract.methods.makeBid(
         loanAmount, interestRate, repaymentPeriod, isFake, addressNFTManager, tokenId
     ).send({ from: selectedUser });
 }
 
-export const selectWinningBid = (selectedLender, bidId, addressNFTManager, tokenId, LoanContractAddress) => {
-    BlindAuctionContract.methods.selectBid(
+export const selectWinningBid = (selectedLender, bidId, tokenId, addressNFTManager, LoanContractAddress) => {
+    return BlindAuctionContract.methods.selectBid(
         selectedLender, bidId, addressNFTManager, tokenId, LoanContractAddress
     ).send({ from: selectedUser });
 }
@@ -242,6 +242,13 @@ export const getAuctionObject = async (addressNFTManager, tokenId) => {
     if (!isContractInitialized) await initContracts();
 
     return BlindAuctionContract.methods.getAuctionObject(addressNFTManager, tokenId).call();
+}
+
+export const endAuction = async (addressNFTManager, tokenId) => {
+    if (!isUserInitialized) await initUser();
+    if (!isContractInitialized) await initContracts();
+
+    return BlindAuctionContract.methods.endAuction(addressNFTManager, tokenId).call();
 }
 
 // P2P Loan Functions
