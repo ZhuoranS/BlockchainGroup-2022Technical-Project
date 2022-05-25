@@ -141,12 +141,27 @@ contract BlindAuction {
         }
         // add bid to availableBids
         auctionObj.blindedBids.push(
-            BlindedBid(HashVal, msg.sender, msg.value
-            ));
+            BlindedBid(HashVal, msg.sender, msg.value)
+        );
+        auctionObj.revealedBids.push(
+            RevealedBid(loan_amt, int_rate, repayment_period, msg.sender)
+        );
         allBlindedBids[NFT_contract_address][NFT_tokenID][msg.sender].push(
             BlindedBid(HashVal, msg.sender, msg.value
             )
         );
+
+        for (uint i = 0; i < Auction_Objects_array.length; i++) {
+            if (Auction_Objects_array[i].NFT_tokenID == NFT_tokenID) {
+                Auction_Objects_array[i].blindedBids.push(
+                    BlindedBid(HashVal, msg.sender, msg.value)
+                );
+                Auction_Objects_array[i].revealedBids.push(
+                    RevealedBid(loan_amt, int_rate, repayment_period, msg.sender)
+                );
+            }
+        }
+
     }
 
      function revealBid(uint[][] memory allSentLoanTerms, bool[] memory fake_, address NFT_contract_address,uint32 NFT_tokenID) public{
