@@ -20,6 +20,11 @@ const Wrapper = styled.div`
     margin-right: 2rem;
   }
 
+  .profile-greeting {
+    font-family: "Brush Script MT", cursive;
+    font-size: 4rem;
+  }
+
   .profile-meta {
     display: flex;
     align-items: baseline;
@@ -105,7 +110,7 @@ const ProfileHeader = ({ profile }) => {
         <img className="avatar" src="https://www.w3schools.com/css/img_lights.jpg" alt="avatar" />
         <div className="profile-info">
           <div className="profile-meta">
-            <h2>{profile?.username}</h2>
+            <h2><span className="profile-greeting">Welcome,</span> {profile?.username}</h2>
             {profile?.isMe ? (
               <div className="options">
                 <OptionsIcon onClick={() =>
