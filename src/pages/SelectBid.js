@@ -86,7 +86,6 @@ const SelectBid = () => {
               duration={parseInt(bid?.repayment_time._hex)} 
               interest={parseInt(bid?.interest_rate._hex, 16)} 
               time={0}
-              bidId={bidId}
             />
             <Button 
               className="select-button" 

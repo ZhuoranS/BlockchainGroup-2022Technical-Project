@@ -14,8 +14,8 @@ import Bid from "../components/Bid"
 import { UserContext } from "../context/UserContext";
 import Button from "../styles/Button";
 
-import { fetchTokenInfo } from "../utils/Utils";
-import { getAuctionObject, makeBid } from "../utils/Web3Client";
+import { fetchTokenInfo, getAuctionEndTime } from "../utils/Utils";
+import { endAuction, getAuctionObject, makeBid } from "../utils/Web3Client";
 import NFTManager from '../abis/NFTManager.json';
 
 const Wrapper = styled.div`
@@ -24,49 +24,61 @@ const Wrapper = styled.div`
   grid-template-rows: auto auto auto;
   grid-template-areas: 
     "header header"
-    "nft_img bid_history" 
+    "content_container content_container" 
     "footer footer";
 
   border: 2px solid ${(props) => props.theme.borderColor};
   border-radius: 0.5rem;
 
-  
   .header {
     grid-area: header;
-    /* border: 1px solid ${(props) => props.theme.borderColor}; */
+  }
+
+  .content-container {
+    grid-area: content_container;
+    max-height: 500px;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+    grid-template-areas: 
+      "nft_img bid_history";
   }
 
   .nft-image {
     grid-area: nft_img;
-    /* border-left: 1px solid ${(props) => props.theme.borderColor}; */
     border-right: 1px solid ${(props) => props.theme.borderColor};
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .bid-history {
+    grid-area: bid_history;
+    overflow-y: scroll;
   }
 
   .footer {
     grid-area: footer;
     border-top: 5px solid ${(props) => props.theme.borderColor};
-    /* border: 2px solid ${(props) => props.theme.borderColor}; */
   }
 
-  .bid-history-unlocked {
-    grid-area: bid_history;
-    /* border-right: 1px solid ${(props) => props.theme.borderColor}; */
+  .post-img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: cover;
   }
 
-  .bid-history-locked {
+  .icon-locked {
     margin: 5rem auto auto auto;
 
     display: flex;
     flex-direction: column;
     align-items: center;
   }
-
-  /* .post-info {
-    border: 1px solid ${(props) => props.theme.borderColor};
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  } */
 
   .post-header-wrapper {
     display: flex;
@@ -80,12 +92,6 @@ const Wrapper = styled.div`
     display: flex;
     align-items: start;
     flex-direction: column;
-  }
-
-  .post-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
   }
   
   svg {
@@ -158,7 +164,7 @@ const Wrapper = styled.div`
   
   .bids {
       padding: 1rem;
-      height: 100%;
+      max-height: 100%;
       overflow-y: scroll;
   }
   
@@ -195,6 +201,7 @@ const DetailedAuction = () => {
   const [post, setPost] = useState({});
   const [tokenInfo, setTokenInfo] = useState({})
   const [auction, setAuction] = useState({})
+  const [auctionEndTime, setAuctionEndTime] = useState("")
   const [currUserBids, setCurrUserBids] = useState([])
 
   const {user} = useContext(UserContext);
@@ -230,7 +237,9 @@ const DetailedAuction = () => {
 
   const getAuctionInfo = async () => {
     let auction = await getAuctionObject(addressNFTManager, tokenId);
+
     setAuction(auction)
+    setAuctionEndTime(getAuctionEndTime(auction.auctionEndTime))
   }
 
   const getCurrUserBids = async () => {
@@ -251,14 +260,6 @@ const DetailedAuction = () => {
 
   // TODO: implement bidding history visibility control
   useEffect(() => {
-    // client(`/posts/${postAddress}`)
-    //   .then((res) => {
-    //     setPost(res.data);
-    //     setBids(res.data.bidHistory);
-    //     setLoading(false);
-    //     setDeadend(false);
-    //   })
-    //   .catch((err) => setDeadend(true));
 
     setLoading(false);
     setDeadend(false);
@@ -294,49 +295,55 @@ const DetailedAuction = () => {
               {`owned by ${auction?.beneficiary?.substr(0, 8)}`}
             </h5>
           </div>
-          <div className="auction-details"><h1>AUCTION DETAILS</h1></div>
+          <div className="auction-details"><h1>Live until {auctionEndTime}</h1></div>
           <div className="post-header">
             <CloseIcon onClick={() => history.goBack()} />
           </div>
         </div>
       </div>
 
-      <div className="nft-image">
-        <img
-          className="post-img"
-          src={tokenInfo?.image}
-          alt="post"
-        />
-      </div>
+      <div className="content-container">
+        <div className="nft-image">
+          <img
+            className="post-img"
+            src={tokenInfo?.image}
+            alt="post"
+          />
+        </div>
 
-      {auction?.auctionEnded ? 
-        <div className="bid-history-unlocked">
+        <div className="bid-history">
+          {auction?.auctionEnded ? 
+              <div className="bids">
+                  {auction?.revealedBids?.map((bid) => (
+                    <Bid 
+                      user={bid?.bidder_address}
+                      amount={parseInt(bid?.loan_amount._hex, 16)}
+                      duration={parseInt(bid?.repayment_time._hex)}
+                      interest={parseInt(bid?.interest_rate._hex, 16)}
+                      time={0}
+                    />
+                  ))}
+              </div>
+          :
             <div className="bids">
-                {bids.map((bid) => (
-                <Bid user={bid.user} amount={bid.amount} duration={bid.duration} interest={bid.interest}/>
-                ))}
+              {currUserBids?.map(bid => (
+                <Bid 
+                  user={bid?.bidder_address}
+                  amount={parseInt(bid?.loan_amount._hex, 16)}
+                  duration={parseInt(bid?.repayment_time._hex)}
+                  interest={parseInt(bid?.interest_rate._hex, 16)}
+                  time={0}
+                />
+              ))}
+              <div className="icon-locked">
+                  <LockClockOutlinedIcon style={{"fontSize": "200px", "cursor": "default"}} />
+                  <h3>Others' Bids Locked Until Auction Ends</h3>
+              </div>
             </div>
-            <p>BID HISTORY</p>
+          }
         </div>
-      :
-        <div>
-          {currUserBids?.map(bid => (
-            <Bid 
-              user={bid?.bidder_address}
-              amount={parseInt(bid?.loan_amount._hex, 16)}
-              duration={parseInt(bid?.repayment_time._hex)}
-              interest={parseInt(bid?.interest_rate._hex, 16)}
-              time={0}
-              bidId={bid.bidId}
-            />
-          ))}
-          <div className="bid-history-locked">
-              <LockClockOutlinedIcon style={{"fontSize": "200px", "cursor": "default"}} />
-              <h3>Others' Bids Locked Until Auction Ends</h3>
-          </div>
-        </div>
-      }
-    
+      </div>
+      
 
       <div className="footer">
           {auction?.beneficiary?.substr(0,8) == user.address.substr(0,8) 

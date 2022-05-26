@@ -9,7 +9,7 @@ const BidWrapper = styled.div`
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
-    margin: 1rem;
+    margin-bottom: 1rem;
 
     grid-template-columns: 4fr 3fr 3fr 3fr;
     grid-template-areas:
@@ -45,7 +45,7 @@ const BidWrapper = styled.div`
 
 `;
 
-const Bid = ({ user, amount, duration, interest, time, bidId }) => {
+const Bid = ({ user, amount, duration, interest, time }) => {
     const history = useHistory();
 
     return (
