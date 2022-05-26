@@ -13,6 +13,14 @@ import P2PLoan from '../abis/P2PLoan.json';
 
 export const SelectBidWrapper = styled.div`
 
+  .select-header {
+    text-align: center;
+  }
+
+  h1 {
+    font-weight: bold;
+  }
+
   .bid-select-container {
     display: grid;
     border: 1px solid lightgray;
@@ -33,7 +41,7 @@ export const SelectBidWrapper = styled.div`
   }
 
   .bid-select-container:hover {
-    background-color: #0095f6;
+    background-color: ${(props) => props.theme.primaryButtonColor};
 
     transition: background-color 0.3s, color 0.3s ;
   }
@@ -80,10 +88,12 @@ const SelectBid = () => {
   }
 
   return (
-    <div>
-      <h1>Select the Winning Bid</h1>
+    <SelectBidWrapper>
+      <div className="select-header">
+        <h1>Select the Winning Bid</h1>
+      </div>
       {bids.map((bid, bidId) => (
-        <SelectBidWrapper>
+        
           <div className="bid-select-container">
             <Bid 
               user={bid?.bidder_address} 
@@ -97,9 +107,9 @@ const SelectBid = () => {
               secondary
               onClick={() => handleSelect(bid, bidId)}>Select Bid</Button>
           </div>
-        </SelectBidWrapper>
+        
       ))}
-    </div>
+    </SelectBidWrapper>
   )
 }
 

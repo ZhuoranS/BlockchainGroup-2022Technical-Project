@@ -139,6 +139,14 @@ export const CreatePostWrapper = styled.div`
 
   .button {
     margin: 1rem;
+    transition: background-color 0.3s, color 0.3s ;
+  }
+
+  .button:hover {
+    background-color: ${(props) => props.theme.primaryButtonColor};
+    color: white;
+
+    transition: background-color 0.3s, color 0.3s ;
   }
   
   #create-auction-page > h1 {
@@ -253,7 +261,7 @@ const CreatePost = ({ open, onClose, post }) => {
         setSelectedNFT(null)
         onClose();
 
-        toast.success("Your post has been submitted successfully");
+        toast.success("Your auction has been successfully created");
     };
 
     // handle carousel sliding
@@ -380,12 +388,14 @@ const CreatePost = ({ open, onClose, post }) => {
                     <Button
                         onClick={onClose}
                         className="button"
+                        secondary
                     >
                         &#x2715; Cancel
                     </Button>
                     <Button
                         onClick={onContinue}
                         className="button"
+                        secondary
                     >
                         Continue &#x2192;
                     </Button>
@@ -415,12 +425,14 @@ const CreatePost = ({ open, onClose, post }) => {
                     <Button
                         onClick={onBack}
                         className="button"
+                        secondary
                     >
                         &#x2190; Edit
                     </Button>
                     <Button
                         onClick={handleSubmitPost}
                         className="button"
+                        secondary
                     >
                         Create Auction
                     </Button>

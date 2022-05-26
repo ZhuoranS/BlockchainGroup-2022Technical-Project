@@ -80,6 +80,14 @@ export const CreateNFTWrapper = styled.div`
 
   .button {
     margin: 1rem;
+    transition: background-color 0.3s, color 0.3s ;
+  }
+
+  .button:hover {
+    background-color: ${(props) => props.theme.primaryButtonColor};
+    color: white;
+
+    transition: background-color 0.3s, color 0.3s ;
   }
   
   #create-nft-page > h1 {
@@ -159,12 +167,14 @@ const CreateNFT = ({open, onClose}) => {
                     <Button
                         onClick={onClose}
                         className="button"
+                        secondary
                     >
                         &#x2715; Cancel
                     </Button>
                     <Button
                         onClick={handleSubmitPost}
                         className="button"
+                        secondary
                     >
                         Create
                     </Button>

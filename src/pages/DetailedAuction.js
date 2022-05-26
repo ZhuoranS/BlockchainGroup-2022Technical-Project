@@ -159,6 +159,26 @@ const Wrapper = styled.div`
   .select-bid-button {
     padding: 1rem;
     width: 100%;
+
+    transition: background-color 0.3s, color 0.3s ;
+  }
+
+  .select-bid-button:hover:enabled {
+    background-color: ${(props) => props.theme.primaryButtonColor};
+    color: white;
+
+    transition: background-color 0.3s, color 0.3s ;
+  }
+
+  .place-bid-button {
+    transition: background-color 0.3s, color 0.3s ;
+  }
+
+  .place-bid-button:hover {
+    background-color: ${(props) => props.theme.primaryButtonColor};
+    color: white;
+
+    transition: background-color 0.3s, color 0.3s ;
   }
 
   
@@ -397,7 +417,7 @@ const DetailedAuction = () => {
                   />
                   <span className="units-field">Days</span>
                 </div>
-                <Button onClick={handleAddBid} secondary>Place Bid</Button>
+                <Button className="place-bid-button" onClick={handleAddBid} secondary>Place Bid</Button>
               </div>
             }
         </div>
