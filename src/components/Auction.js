@@ -52,14 +52,18 @@ const Auction = ({ auction }) => {
   const history = useHistory();
   const [nft, setNFT] = useState({})
   const [tokenInfo, setTokenInfo] = useState({})
+  const [auctionEndTime, setAuctionEndTime] = useState("")
 
-  const auctionEndTime = getAuctionEndTime(auction.auctionEndTime)
+  const getAuctionTime = () => {
+    setAuctionEndTime(auction.auctionEnded ? "AUCTION ENDED" : "Live until " + getAuctionEndTime(auction))
+  }
 
   const getTokenInfo = async () => {
       let newTokenInfo = await fetchTokenInfo(auction.NFT_tokenID);
       let parsedTokenInfo = JSON.parse(newTokenInfo)
       
       setTokenInfo(parsedTokenInfo)
+      getAuctionTime();
   }
 
   useEffect(() => {
@@ -92,7 +96,7 @@ const Auction = ({ auction }) => {
                     </span>
                 </div>
                 <h5>
-                    <span className="secondary">Live until {auctionEndTime}</span>
+                    <span className="secondary">{auctionEndTime}</span>
                 </h5>
             </div>
 

@@ -259,7 +259,7 @@ const DetailedAuction = () => {
     let auction = await getAuctionObject(addressNFTManager, tokenId);
 
     setAuction(auction)
-    setAuctionEndTime(getAuctionEndTime(auction.auctionEndTime))
+    setAuctionEndTime(auction.auctionEnded ? "AUCTION ENDED" : "Live until " + getAuctionEndTime(auction))
   }
 
   const getCurrUserBids = async () => {
@@ -315,7 +315,7 @@ const DetailedAuction = () => {
               {`owned by ${auction?.beneficiary?.substr(0, 8)}`}
             </h5>
           </div>
-          <div className="auction-details"><h1>Live until {auctionEndTime}</h1></div>
+          <div className="auction-details"><h1>{auctionEndTime}</h1></div>
           <div className="post-header">
             <CloseIcon onClick={() => history.goBack()} />
           </div>
