@@ -18,17 +18,22 @@ export const SelectBidWrapper = styled.div`
     border: 1px solid lightgray;
     border-radius: 0.5rem;
     margin: 1rem;
-  }
-
-  .select-button {
-    border: none;
+    pointer-events: none;
 
     transition: background-color 0.3s, color 0.3s ;
   }
 
+  .select-button {
+    border: none;
+    pointer-events: auto;
+  }
+
   .select-button:hover {
-    background-color: #0095f6;
     color: white;
+  }
+
+  .bid-select-container:hover {
+    background-color: #0095f6;
 
     transition: background-color 0.3s, color 0.3s ;
   }
