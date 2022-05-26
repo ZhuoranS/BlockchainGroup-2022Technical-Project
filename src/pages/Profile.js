@@ -65,7 +65,7 @@ const Profile = () => {
   const getOwnedAuctions = async () => {
     const ownedAuctionsObjs = []
 
-    for (let tokenId of user.ownedLiveAuctions) {
+    for (let tokenId of user.ownedAuctions) {
       let auctionObj = await getAuctionObject(addressNFTManager, tokenId)
       ownedAuctionsObjs.push(auctionObj)
     }
@@ -141,11 +141,11 @@ const Profile = () => {
           <span>Lend</span>
         </div>
         <div
-            style={{ fontWeight: tab === "MY_LIVE_AUCTIONS" ? "500" : "" }}
-            onClick={() => setTab("MY_LIVE_AUCTIONS")}
+            style={{ fontWeight: tab === "MY_AUCTIONS" ? "500" : "" }}
+            onClick={() => setTab("MY_AUCTIONS")}
         >
-          <SavedIcon    icon="MY_LIVE_AUCTIONS" tabId={tab}/>
-          <span>My Live Auctions</span>
+          <SavedIcon    icon="MY_AUCTIONS" tabId={tab}/>
+          <span>My Auctions</span>
         </div>
         <div
             style={{ fontWeight: tab === "MY_NFTS" ? "500" : "" }}
@@ -207,12 +207,12 @@ const Profile = () => {
           </>
       )}
 
-      {tab === "MY_LIVE_AUCTIONS" && (
+      {tab === "MY_AUCTIONS" && (
           <>
             {ownedAuctions.length === 0 ? (
                 <Placeholder
-                    title="My Live Auctions"
-                    text="Any live auctions you created will show here"
+                    title="My Auctions"
+                    text="Any auctions you created will show here"
                     icon="bookmark"
                 />
             ) : (

@@ -73,7 +73,7 @@ export const initUser = async () => {
         "avatar": "https://www.w3schools.com/css/img_lights.jpg",
         "isMe": true,
         "username": "USERNAME",
-        "ownedLiveAuctions": await initUserOwnedLiveAuctions(selectedUser),
+        "ownedAuctions": await initUserOwnedAuctions(selectedUser),
         "bidAuctions": await initUserBidAuctions(selectedUser),
     }
 
@@ -107,13 +107,13 @@ export const initUserNFTs = async (user) => {
         return ownedNFTs;
     }
 
-    const latestId = (await getLatestId()).toNumber()
+    const latestId = (await getLatestId())?.toNumber()
     userNFTs = await getOwnedNFTs(latestId);
 
     return userNFTs
 }
 
-export const initUserOwnedLiveAuctions = async (user) => {
+export const initUserOwnedAuctions = async (user) => {
 
     const allAuctionObjects = await getAllAuctionObjects();
     console.log(allAuctionObjects)
@@ -122,7 +122,6 @@ export const initUserOwnedLiveAuctions = async (user) => {
     for (let i = 0; i < allAuctionObjects.length; i++) {
         let currAuctionObj = allAuctionObjects[i]
 
-        if (currAuctionObj.auctionEnded) continue;
         if (!(currAuctionObj.beneficiary == user)) continue;
 
         ownedAuctionObjects.push(currAuctionObj.NFT_tokenID)
@@ -158,16 +157,21 @@ export const initAuctions = async () => {
     const addressNFTManager = NFTManager.networks[networkId].address;
 
     for (let auction of auctions) {
+        // gets time in seconds
         let currTime = new Date().getTime() / 1000
         
         try {
-            if (currTime >= auction.auctionEndTime) {
-                // auction alrady ended
+            if (currTime >= auction.auctionEndTime && !auction.auctionEnded) {
+                // auction already ended
                 console.log(auction.NFT_tokenID)
-                await endAuction(addressNFTManager, auction.NFT_tokenID)
+                console.log(parseInt(auction.auctionEndTime._hex))
+                console.log(parseInt(currTime))
+                let auctionOwner = auction.beneficiary
+                await endAuction(parseInt(currTime), addressNFTManager, auction.NFT_tokenID, auctionOwner)
+                console.log(auction.auctionEnded)
             }
-        } catch {
-            console.log("ERROR with ending auction")
+        } catch (err) {
+            console.log(err)
         }
 
     }
@@ -287,11 +291,11 @@ export const getAuctionObject = async (addressNFTManager, tokenId) => {
     return BlindAuctionContract.methods.getAuctionObject(addressNFTManager, tokenId).call();
 }
 
-export const endAuction = async (addressNFTManager, tokenId) => {
+export const endAuction = async (currTime, addressNFTManager, tokenId, auctionOwner) => {
     if (!isUserInitialized) await initUser();
     if (!isContractInitialized) await initContracts();
 
-    return BlindAuctionContract.methods.endAuction(addressNFTManager, tokenId).call();
+    return BlindAuctionContract.methods.endAuction(currTime, addressNFTManager, tokenId).send({ from: auctionOwner });
 }
 
 // P2P Loan Functions

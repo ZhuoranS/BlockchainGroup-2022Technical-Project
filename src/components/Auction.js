@@ -5,7 +5,7 @@ import {useHistory} from "react-router-dom";
 import { timeSince } from "../utils";
 
 import { getTokenURI } from "../utils/Web3Client";
-import { fetchTokenInfo } from "../utils/Utils";
+import { fetchTokenInfo, getAuctionEndTime } from "../utils/Utils";
 
 export const AuctionWrapper = styled.div`
   height: 100%;
@@ -53,6 +53,8 @@ const Auction = ({ auction }) => {
   const [nft, setNFT] = useState({})
   const [tokenInfo, setTokenInfo] = useState({})
 
+  const auctionEndTime = getAuctionEndTime(auction.auctionEndTime)
+
   const getTokenInfo = async () => {
       let newTokenInfo = await fetchTokenInfo(auction.NFT_tokenID);
       let parsedTokenInfo = JSON.parse(newTokenInfo)
@@ -69,20 +71,11 @@ const Auction = ({ auction }) => {
         <AuctionWrapper>
 
             <div className="img-wrapper">
-            {auction?.auctionEnded ?
-                <img
-                    onClick={() => history.push(`/auctions/completed/${auction?.NFT_tokenID}`)}
-                    src={tokenInfo?.image}
-                    alt="auction-img"
-                />
-                :
-                <img
-                    onClick={() => history.push(`/auctions/${auction?.NFT_tokenID}`)}
-                    src={tokenInfo?.image}
-                    alt="auction-img"
-                />
-                
-            }
+            <img
+              onClick={() => history.push(`/auctions/${auction?.NFT_tokenID}`)}
+              src={tokenInfo?.image}
+              alt="auction-img"
+            />
             </div>
 
 
@@ -99,7 +92,7 @@ const Auction = ({ auction }) => {
                     </span>
                 </div>
                 <h5>
-                    <span className="secondary"> ___ LEFT </span>
+                    <span className="secondary">Live until {auctionEndTime}</span>
                 </h5>
             </div>
 

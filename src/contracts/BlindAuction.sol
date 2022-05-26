@@ -231,13 +231,25 @@ contract BlindAuction {
         );
     }
 
-    function endAuction(address NFT_contract_address,uint32 NFT_tokenID) public {
+    function endAuction(uint curr_time, address NFT_contract_address, uint32 NFT_tokenID) public {
         Auction_Object storage auctionObj = Auction_Objects[NFT_contract_address][NFT_tokenID];
         require(!auctionObj.auctionEnded, "Auction already ended");
         require(!auctionObj.auctionCanceled, "Auction already canceled");
-        require(block.timestamp >= auctionObj.auctionEndTime, "Auction duration has not elapsed yet");
+        require(curr_time > auctionObj.auctionEndTime, "Auction duration has not elapsed yet");
 
         auctionObj.auctionEnded = true;
+
+        // end auction in master list
+        for (uint i = 0; i < Auction_Objects_array.length; i++) {
+            if (Auction_Objects_array[i].NFT_tokenID == NFT_tokenID) {
+                Auction_Objects_array[i].auctionEnded = true;
+            }
+        }
+    }
+
+    function viewAuctionEnded(address NFT_contract_address,uint32 NFT_tokenID) public view returns (bool) {
+        Auction_Object storage auctionObj = Auction_Objects[NFT_contract_address][NFT_tokenID];
+        return auctionObj.auctionEnded;
     }
 
     function cancelAuction(address NFT_contract_address,uint32 NFT_tokenID) public{

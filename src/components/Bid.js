@@ -10,6 +10,7 @@ const BidWrapper = styled.div`
     justify-content: flex-start;
     align-items: center;
     margin-bottom: 1rem;
+    background-color: ${(props) => props.theme.white};
 
     grid-template-columns: 4fr 3fr 3fr 3fr;
     grid-template-areas:
