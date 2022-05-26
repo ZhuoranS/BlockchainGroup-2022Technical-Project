@@ -326,8 +326,8 @@ const CreatePost = ({ open, onClose, post }) => {
               aria-describedby="outlined-weight-helper-text"
               inputProps={{
                 'aria-label': 'weight',
-                min: "0.01",
-                step: "0.01"
+                min: "1",
+                step: "1"
               }}
               type="number"
               placeholder="Min Loan Amount"
@@ -342,7 +342,8 @@ const CreatePost = ({ open, onClose, post }) => {
               aria-describedby="outlined-weight-helper-text"
               inputProps={{
                 'aria-label': 'weight',
-                min: "1"
+                min: "1",
+                step: "1",
               }}
               type="number"
               placeholder="Loan Duration"
@@ -358,7 +359,7 @@ const CreatePost = ({ open, onClose, post }) => {
               inputProps={{
                 'aria-label': 'weight',
                 min: "0",
-                step: "0.25"
+                step: "1"
               }}
               type="number"
               placeholder="Max Interest Rate"
@@ -373,8 +374,8 @@ const CreatePost = ({ open, onClose, post }) => {
               aria-describedby="outlined-weight-helper-text"
               inputProps={{
                 'aria-label': 'weight',
-                min: "1",
-                step: "1"
+                min: "0",
+                step: "30"
               }}
               type="number"
               placeholder="Min Repayment Period"
