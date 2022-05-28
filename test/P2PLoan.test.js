@@ -140,14 +140,14 @@ contract('P2PLoan', (accounts) => {
           100,  // monthly interest rate 
           30, // loan duration in days
         ],
-        { from: accounts[0], gas:3000000} // sent from the lender
+        { from: accounts[2], gas:3000000} // sent from the lender
       );
 
       await contract.repayLoan.sendTransaction(
           1, // loan id
           { 
             from: accounts[9], 
-            value: web3Utils.toWei("0.001", "ether"),
+            value: web3Utils.toWei("2", "ether"),
             gas:3000000
           }
         );
